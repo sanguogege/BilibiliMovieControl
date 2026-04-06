@@ -2,7 +2,7 @@
     "name": "B站连播助手 (Bilibili Movie Control)",
     "description": "基于 SolidJS 开发的 Bilibili 视频跳转工具",
     "private": true,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "type": "module",
     "scripts": {
         "dev": "wxt",
@@ -16,7 +16,10 @@
         "postinstall": "wxt prepare",
         "change": "bun changeset",
         "version": "bun changeset version",
-        "status": "bun changeset status"
+        "status": "bun changeset status",
+        "release": "bun run build && bun run submit:firefox && bun run submit:edge",
+        "submit:firefox": "wxt submit --firefox-zip .output/*.zip",
+        "submit:edge": "wxt submit --edge-zip .output/*.zip"
     },
     "dependencies": {
         "solid-js": "^1.9.11"
