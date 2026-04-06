@@ -9,7 +9,7 @@ export default defineConfig({
     }
   },
   manifest: {
-    permissions: ['storage', 'tabs', 'activeTab'],
+    permissions: ['storage', 'tabs', 'activeTab', "scripting",],
     host_permissions: ['*://*.bilibili.com/*'],
   },
 });
