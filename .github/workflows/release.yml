@@ -27,9 +27,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Firefox 凭证
-          AMO_EXTENSION_ID: ${{ secrets.AMO_EXTENSION_ID }}
-          AMO_SIGNING_KEY: ${{ secrets.AMO_SIGNING_KEY }}
-          AMO_SIGNING_SECRET: ${{ secrets.AMO_SIGNING_SECRET }}
+          FIREFOX_EXTENSION_ID: ${{ secrets.AMO_EXTENSION_ID }}
+          FIREFOX_JWT_ISSUER: ${{ secrets.AMO_SIGNING_KEY }}
+          FIREFOX_JWT_SECRET: ${{ secrets.AMO_SIGNING_SECRET }}
           # Edge 凭证
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
