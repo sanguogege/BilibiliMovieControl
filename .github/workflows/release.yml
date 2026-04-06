@@ -37,6 +37,10 @@ jobs:
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           EDGE_CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
           EDGE_ACCESS_TOKEN_URL: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
+          # 补充环境变量名，确保发布脚本能正确获取到 Edge 的凭证
+          EDGE_API_KEY: ${{ secrets.EDGE_CLIENT_SECRET }} 
+          EDGE_TENANT_ID: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
+
 
       - name: Upload to GitHub Release
         # 只有当 Changesets 真的执行了 publish（即版本更新了）才运行
