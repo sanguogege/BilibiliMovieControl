@@ -24,6 +24,7 @@ jobs:
         with:
           # 执行自定义的发布脚本
           publish: bun run release
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Firefox 凭证
@@ -35,3 +36,17 @@ jobs:
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           EDGE_CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
           EDGE_ACCESS_TOKEN_URL: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
+
+      - name: Upload to GitHub Release
+        # 只有当 Changesets 真的执行了 publish（即版本更新了）才运行
+        if: steps.changesets.outputs.published == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          # 指定要挂载到 GitHub Release 页面供人下载的文件
+          files: |
+            .output/*firefox*.zip
+            .output/*edge*.zip
+          # 使用 Changesets 自动生成的 Tag 名字
+          tag_name: v${{ steps.changesets.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
