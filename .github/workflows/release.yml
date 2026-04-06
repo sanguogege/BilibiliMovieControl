@@ -24,6 +24,7 @@ jobs:
         with:
           # 执行自定义的发布脚本
           publish: bun run release
+          version: bun run version
           createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
