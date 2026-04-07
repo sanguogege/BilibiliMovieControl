@@ -1,5 +1,11 @@
 # B 站连播助手 (Bilibili Movie Control)
 
+## 1.0.5
+
+### Patch Changes
+
+- add auto mode
+
 ## 1.0.4
 
 ### Patch Changes
