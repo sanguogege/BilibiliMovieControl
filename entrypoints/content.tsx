@@ -17,7 +17,7 @@ export default defineContentScript({
     // 初始化帧分析器
     initFrameAnalyzer();
 
-    const [config, setConfig] = createSignal({ skipStart: 0, skipEnd: 0, jumpEnd: 0, active: false });
+    const [config, setConfig] = createSignal({ skipStart: 0, skipEnd: 0, jumpEnd: 0 });
     const [isCollectionPage, setIsCollectionPage] = createSignal(false);
 
     const [mode, setMode] = createSignal<'auto' | 'manual'>('auto');
@@ -42,11 +42,10 @@ export default defineContentScript({
         skipStart: s,
         skipEnd: m,
         jumpEnd: e,
-        active: !!data.isActive
       });
     };
 
-    const res = await browser.storage.local.get(['sH', 'sM', 'sS', 'mH', 'mM', 'mS', 'eH', 'eM', 'eS', 'isActive']);
+    const res = await browser.storage.local.get(['sH', 'sM', 'sS', 'mH', 'mM', 'mS', 'eH', 'eM', 'eS']);
     updateConfig(res);
 
     const mountUI = () => {
@@ -71,7 +70,7 @@ export default defineContentScript({
       };
 
       disposeUI = render(() => (
-        <Show when={config().active && isCollectionPage()}>
+        <Show when={ isCollectionPage()}>
           <div style={{ display: 'inline-flex', "align-items": 'center', gap: '12px', padding: '2px 8px', background: '#fb7299', color: 'white', "border-radius": '4px', "font-size": '11px', "vertical-align": 'middle' }}>
             <span>⏭ 跳过: {format(config().skipStart)}-{format(config().skipEnd)}</span>
             <span style={{ opacity: 0.8 }}>|</span>
@@ -99,7 +98,7 @@ export default defineContentScript({
       }
 
       const video = getMainVideo();
-      if (!video || !config().active || !isCol) return;
+      if (!video || !isCol) return;
 
       // 获取播放状态：false 表示正在播放，true 表示暂停
       const isPlaying = !video.paused;
