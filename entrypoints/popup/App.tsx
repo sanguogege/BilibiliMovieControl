@@ -19,9 +19,32 @@ export default function App() {
   } = useBiliConfig();
 
   const [isPageReady, setIsPageReady] = createSignal(false);
+  // 模式：'auto' 或 'manual'，默认自动
+  const [mode, setMode] = createSignal<'auto' | 'manual'>('auto');
+  // 控制是否显示手动时间输入框
+  const showManualTime = () => mode() === 'manual';
+
+  // 加载保存的模式
+  const loadMode = async () => {
+    const res = await browser.storage.local.get('mode');
+    if (res.mode === 'manual' || res.mode === 'auto') {
+      setMode(res.mode);
+    }
+  };
+
+  // 保存模式并通知 content script
+  const saveMode = async (newMode: 'auto' | 'manual') => {
+    setMode(newMode);
+    await browser.storage.local.set({ mode: newMode });
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]?.id) {
+      await browser.tabs.sendMessage(tabs[0].id, { type: 'SET_MODE', mode: newMode });
+    }
+  };
 
   onMount(async () => {
     await initFromStorage();
+    await loadMode();
 
     const tabs = await browser.tabs.query({ active: true, currentWindow: true });
     const activeTab = tabs[0];
@@ -47,6 +70,17 @@ export default function App() {
     }
   });
 
+  // 覆盖 applyAndArchive，额外发送模式信息
+  const handleApply = async () => {
+    await saveMode(mode()); // 确保模式已保存
+    await applyAndArchive(); // 原有逻辑会发送 UPDATE_CONFIG，但还需要发送模式
+    // 补充发送模式消息
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]?.id) {
+      await browser.tabs.sendMessage(tabs[0].id, { type: 'SET_MODE', mode: mode() });
+    }
+  };
+
   return (
     <div style={{
       width: '280px', padding: '15px', display: 'flex',
@@ -63,10 +97,33 @@ export default function App() {
         </span>
       </h3>
 
+      {/* 模式切换 */}
+      <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center', 'margin-bottom': '4px' }}>
+        <label style={{ display: 'flex', 'align-items': 'center', gap: '4px', 'font-size': '12px' }}>
+          <input
+            type="radio"
+            name="mode"
+            value="auto"
+            checked={mode() === 'auto'}
+            onChange={(e) => e.currentTarget.checked && saveMode('auto')}
+          />
+          自动（智能检测片尾）
+        </label>
+        <label style={{ display: 'flex', 'align-items': 'center', gap: '4px', 'font-size': '12px' }}>
+          <input
+            type="radio"
+            name="mode"
+            value="manual"
+            checked={mode() === 'manual'}
+            onChange={(e) => e.currentTarget.checked && saveMode('manual')}
+          />
+          手动（指定切集点）
+        </label>
+      </div>
+
       <div style={{ display: 'flex', 'flex-direction': 'column', gap: '10px' }}>
-       
         <div style={{ display: 'flex', 'flex-direction': 'column', gap: '8px' }}>
-          <span> 跳过区间 (先导+OP)</span>
+          <span>跳过区间 (先导+OP)</span>
           <TimeInput
             label="从"
             hour={sH()} minute={sM()} second={sS()}
@@ -75,7 +132,7 @@ export default function App() {
             onSecondChange={setSS}
           />
         </div>
-       <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
           <TimeInput
             label="至"
             hour={mH()} minute={mM()} second={mS()}
@@ -83,21 +140,25 @@ export default function App() {
             onMinuteChange={setMM}
             onSecondChange={setMS}
           />
-       </div>
-        <div style={{ display: 'flex', 'flex-direction': 'column', gap: '8px' }}>
-          <span> 结尾切集点</span>
-          <TimeInput
-            label="切"
-            hour={eH()} minute={eM()} second={eS()}
-            onHourChange={setEH}
-            onMinuteChange={setEM}
-            onSecondChange={setES}
-          />
         </div>
+
+        {/* 手动模式才显示结尾切集点 */}
+        <Show when={showManualTime()}>
+          <div style={{ display: 'flex', 'flex-direction': 'column', gap: '8px' }}>
+            <span>结尾切集点</span>
+            <TimeInput
+              label="切"
+              hour={eH()} minute={eM()} second={eS()}
+              onHourChange={setEH}
+              onMinuteChange={setEM}
+              onSecondChange={setES}
+            />
+          </div>
+        </Show>
       </div>
 
       <div style={{ display: 'flex', gap: '8px' }}>
-        <button onClick={applyAndArchive} style={{
+        <button onClick={handleApply} style={{
           flex: 1.5, background: '#fb7299', color: 'white', border: 'none',
           padding: '8px', 'border-radius': '6px', cursor: 'pointer',
           'font-weight': 'bold', 'font-size': '12px'
