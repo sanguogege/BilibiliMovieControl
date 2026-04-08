@@ -5,8 +5,8 @@ import {
     FastForward,
     Bookmark,
     History,
-    AlertCircle,
-    PlayCircle
+    CircleAlert,
+    CirclePlay
 } from 'lucide-solid';
 
 export default function AboutPage() {
@@ -15,7 +15,7 @@ export default function AboutPage() {
             {/* 头部标题 */}
             <header style={{ "margin-bottom": "40px" }}>
                 <h1 style={{ "font-size": "32px", margin: "0 0 12px 0", color: "#fb7299", "display": "flex", "align-items": "center", gap: "12px" }}>
-                    <PlayCircle size={36} /> BilibiliMovieControl
+                    <CirclePlay size={36} /> BilibiliMovieControl
                 </h1>
                 <p style={{ color: "#61666d", "font-size": "16px", "line-height": "1.6" }}>
                     专为 Bilibili 合集视频打造的连播助手。通过智能检测与个性化存档，让你的观看体验更丝滑。
@@ -27,7 +27,7 @@ export default function AboutPage() {
                 background: "#fff1f4", border: "1px solid #ffb3c1", padding: "20px",
                 "border-radius": "12px", "margin-bottom": "30px", display: "flex", gap: "15px", "align-items": "center"
             }}>
-                <AlertCircle color="#fb7299" size={24} style={{ "flex-shrink": 0 }} />
+                <CircleAlert color="#fb7299" size={24} style={{ "flex-shrink": 0 }} />
                 <div>
                     <strong style={{ color: "#fb7299", "font-size": "16px" }}>适用范围说明</strong>
                     <p style={{ margin: "4px 0 0 0", color: "#61666d", "font-size": "14px" }}>

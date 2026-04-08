@@ -4,6 +4,7 @@ import { useBiliConfig } from '@/hooks/useBiliConfig';
 import { TimeInput } from '@/components/TimeInput';
 import { HistoryList } from '@/components/HistoryList';
 import { browser } from 'wxt/browser';
+import { Settings } from 'lucide-solid';
 
 export default function App() {
   const {
@@ -86,12 +87,42 @@ export default function App() {
 
   return (
     <div style={{ width: '280px', padding: '15px', display: 'flex', 'flex-direction': 'column', gap: '12px', background: '#fff' }}>
-      <h3 style={{ margin: '0', 'font-size': '16px', color: '#fb7299', 'text-align': 'center' }}>
+      <h3 style={{ display: 'flex', "align-items": 'center', "justify-content": 'center', margin: '0', 'font-size': '16px', color: '#fb7299' }}>
         B站连播助手
         <span style={{ 'font-size': '10px', 'margin-left': '6px', padding: '2px 4px', background: isPageReady() ? '#4caf50' : '#9e9e9e', color: 'white', 'border-radius': '3px' }}>
           {isPageReady() ? '已就绪' : '待命中'}
         </span>
-        <button onClick={openOptions} style={{ 'font-size': '12px', 'margin-left': '6px', padding: '2px 4px', background: '#e3e5e7', color: '#61666d', border: 'none', cursor: 'pointer' }}>设置</button>
+        <button
+          onClick={openOptions}
+          style={{
+            'font-size': '12px',
+            'margin-left': '6px',
+            padding: '3px 6px',
+            background: '#f6f7f9', // 稍微浅一点的底色，更精致
+            color: '#61666d', // 保持 B 站次要文字颜色
+            border: '1px solid #e3e5e7', // 添加淡淡的边框线
+            'border-radius': '4px', // 加一点圆角
+            cursor: 'pointer',
+            display: 'inline-flex', // 使用 flex 对齐图标和文字
+            'align-items': 'center',
+            gap: '3px', // 图标和文字的间距
+            transition: 'all 0.2s' // 添加过渡动画
+          }}
+          // 添加 hover 效果
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = '#ffeef3';
+            e.currentTarget.style.color = '#fb7299';
+            e.currentTarget.style.borderColor = '#ffb3c1';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = '#f6f7f9';
+            e.currentTarget.style.color = '#61666d';
+            e.currentTarget.style.borderColor = '#e3e5e7';
+          }}
+        >
+          <Settings size={14} /> {/* 设置图标，大小要合适 */}
+          设置
+        </button>
       </h3>
 
       <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center' }}>

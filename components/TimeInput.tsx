@@ -11,6 +11,7 @@ interface TimeInputProps {
 }
 
 const inputStyle = {
+    "flex": "1",
     'width': '45px',
     'padding': '4px',
     'border': '1px solid #ddd',
@@ -29,14 +30,15 @@ export const TimeInput: Component<TimeInputProps> = (props) => {
     return (
         <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
             <span style={labelStyle}>{props.label}</span>
-            <div style={{ display: 'flex', gap: '4px', 'align-items': 'center' }}>
+            <div style={{ display: 'flex', flex:1, gap: '4px',"align-items": 'center',"justify-content": 'justify' }}>
                 <input
                     type="number"
                     value={props.hour}
                     onInput={e => props.onHourChange(+e.currentTarget.value)}
                     style={inputStyle}
                     min="0"
-                />:
+                />
+                :
                 <input
                     type="number"
                     value={props.minute}

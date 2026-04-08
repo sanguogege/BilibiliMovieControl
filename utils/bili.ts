@@ -11,8 +11,9 @@ export const getBiliCollection = async (tabId: number): Promise<string> => {
                 const isPod = !!document.querySelector('.video-pod');
                 if (!isPod) return '';
                 const titleEl = document.querySelector('.video-title')?.textContent?.trim() || '未知合集';
+                const titleEl2 = document.querySelector('.simple-base-item.video-pod__item.active.normal .title-txt')?.textContent?.trim();
                 if (titleEl !== '未知合集') {
-                    return titleEl.replace(/(\[|【)?(电视剧|美剧)(\]|】)?/g, '');
+                    return titleEl.replace(/(\[|【)?(电视剧|美剧)(\]|】)?/g, '').slice(0, 10) + (titleEl2 ? `- ${titleEl2.slice(0, 8) }` : '');
                 }
                 return titleEl;
             },
@@ -22,15 +23,3 @@ export const getBiliCollection = async (tabId: number): Promise<string> => {
         return '';
     }
 };
-
-/**
- * 格式化历史记录标题
- */
-export const formatTitle = (col: string, full: string): string =>
-    `${col.slice(0, 10)}-${full.replace('_哔哩哔哩_bilibili', '').slice(0, 8)}`;
-
-
-/**
- * 判断帧分析是否已经启动
- */
- 
