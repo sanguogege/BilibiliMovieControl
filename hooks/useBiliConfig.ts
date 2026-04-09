@@ -21,14 +21,7 @@ export function useBiliConfig() {
     const [latestHistory, setLatestHistory] = createSignal<HistoryItem[]>([]);
     const [pinnedHistory, setPinnedHistory] = createSignal<HistoryItem[]>([]);
 
-    // --- 3. 辅助方法：获取当前 UI 状态对应的配置对象 ---
-    const getCurrentConfig = (): VideoConfig => ({
-        sH: sH(), sM: sM(), sS: sS(),
-        mH: mH(), mM: mM(), mS: mS(),
-        eH: eH(), eM: eM(), eS: eS(),
-    });
 
-    // --- 4. 初始化：从存储中恢复数据 ---
     const initFromStorage = async () => {
         const res = await browser.storage.local.get([
             'sH', 'sM', 'sS', 'mH', 'mM', 'mS', 'eH', 'eM', 'eS',
@@ -45,7 +38,6 @@ export function useBiliConfig() {
         if (res.pinnedHistory) setPinnedHistory(res.pinnedHistory as HistoryItem[]);
     };
 
-    // --- 5. 重置配置 ---
     const resetConfig = async () => {
         const zeroConfig = { sH: 0, sM: 0, sS: 0, mH: 0, mM: 0, mS: 0, eH: 0, eM: 0, eS: 0 };
         // 重置信号
@@ -56,7 +48,6 @@ export function useBiliConfig() {
         await browser.storage.local.set({ ...zeroConfig});
     };
 
-    // --- 6. 加载记录（从历史/存档恢复设置并跳转） ---
     const loadHistory = async (item: HistoryItem) => {
         const cfg = item.config;
         // 1. 同步到 Storage
@@ -73,40 +64,6 @@ export function useBiliConfig() {
         await browser.tabs.update({ url: item.url });
     };
 
-    // --- 7. 应用并存档 (核心：调用后台逻辑) ---
-    const applyAndArchive = async () => {
-        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-        const activeTab = tabs[0];
-        const currentConfig = getCurrentConfig();
-
-        // A. 先保存基础配置（供 Content Script 读取）
-        await browser.storage.local.set({ ...currentConfig });
-
-        if (activeTab?.id) {
-            // B. 发送消息给 Background 执行“抓取标题+存档”的重活
-            const response = await browser.runtime.sendMessage({
-                type: 'DO_ARCHIVE',
-                data: { tab: activeTab, config: currentConfig }
-            });
-
-            // C. 如果后台返回了更新后的存档列表，更新 UI
-            if (response?.pinnedHistory) {
-                setPinnedHistory(response.pinnedHistory);
-            }
-
-            // D. 通知 Content Script 立即更新当前播放器的跳过参数
-            await browser.tabs.sendMessage(activeTab.id, {
-                type: 'UPDATE_CONFIG',
-                skipStart: currentConfig.sH * 3600 + currentConfig.sM * 60 + currentConfig.sS,
-                skipEnd: currentConfig.mH * 3600 + currentConfig.mM * 60 + currentConfig.mS,
-                jumpEnd: currentConfig.eH * 3600 + currentConfig.eM * 60 + currentConfig.eS,
-            });
-        }
-
-        // 操作完成，关闭 Popup
-        window.close();
-    };
-
     return {
         // 配置信号
         sH, setSH, sM, setSM, sS, setSS,
@@ -119,7 +76,5 @@ export function useBiliConfig() {
         initFromStorage,
         resetConfig,
         loadHistory,
-        applyAndArchive,
-        getCurrentConfig,
     };
 }

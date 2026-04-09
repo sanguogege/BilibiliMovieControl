@@ -4,7 +4,7 @@ import { getBiliCollection } from '@/utils/bili';
 
 export default defineBackground(() => {
 
-  // 核心：处理手动存档 (对应原 applyAndArchive 的核心部分)
+  // 核心：处理手动存档 (对应原  的核心部分)
   const handleArchiveLogic = async (tab: any, config: any) => {
     const res:any = await browser.storage.local.get({ pinnedHistory: [] });
     const colTitle = await getBiliCollection(tab.id);
