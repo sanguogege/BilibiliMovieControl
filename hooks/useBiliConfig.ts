@@ -17,10 +17,24 @@ export function useBiliConfig() {
     const [eM, setEM] = createSignal(0);
     const [eS, setES] = createSignal(0);
 
-    // --- 2. 列表信号 ---
+    // --- 2. 页面状态信号 ---
+    const [isPageReady, setIsPageReady] = createSignal(false);
+    const [mode, setMode] = createSignal<'auto' | 'manual'>('auto');
+
+    // --- 3. 列表信号 ---
     const [latestHistory, setLatestHistory] = createSignal<HistoryItem[]>([]);
     const [pinnedHistory, setPinnedHistory] = createSignal<HistoryItem[]>([]);
 
+
+
+    const saveMode = async (newMode: 'auto' | 'manual') => {
+        setMode(newMode);
+        await browser.storage.local.set({ mode: newMode });
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        if (tabs[0]?.id) {
+            await browser.tabs.sendMessage(tabs[0].id, { type: 'SET_MODE', mode: newMode });
+        }
+    };
 
     const initFromStorage = async () => {
         const res = await browser.storage.local.get([
@@ -38,14 +52,46 @@ export function useBiliConfig() {
         if (Array.isArray(res.pinnedHistory)) setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryItem[]);
     };
 
+    const handleApply = async () => {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        if (!tabs[0]?.id) return;
+
+        const configValues = { sH: sH(), sM: sM(), sS: sS(), mH: mH(), mM: mM(), mS: mS(), eH: eH(), eM: eM(), eS: eS() };
+        await browser.storage.local.set(configValues);
+
+        await browser.tabs.sendMessage(tabs[0].id, { type: 'UPDATE_CONFIG', ...configValues });
+    };
+
+    const handleArchive = async () => {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        if (!tabs[0]?.id) return;
+
+        // 呼叫后台执行存档计算
+        const response = await browser.runtime.sendMessage({
+            type: 'DO_ARCHIVE',
+            data: {
+                tab: { id: tabs[0].id, title: tabs[0].title, url: tabs[0].url },
+                config: { sH: sH(), sM: sM(), sS: sS(), mH: mH(), mM: mM(), mS: mS(), eH: eH(), eM: eM(), eS: eS() }
+            }
+        });
+
+        if (response?.pinnedHistory) {
+            setPinnedHistory(response.pinnedHistory.slice(0, 3));
+        }
+    };
+
     const resetConfig = async () => {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        if (!tabs[0]?.id) return;
         const zeroConfig = { sH: 0, sM: 0, sS: 0, mH: 0, mM: 0, mS: 0, eH: 0, eM: 0, eS: 0 };
         // 重置信号
         setSH(0); setSM(0); setSS(0);
         setMH(0); setMM(0); setMS(0);
         setEH(0); setEM(0); setES(0);
         // 同步到存储
-        await browser.storage.local.set({ ...zeroConfig});
+        await browser.storage.local.set(zeroConfig);
+        await browser.tabs.sendMessage(tabs[0].id, { type: 'UPDATE_CONFIG', ...zeroConfig });
+       
     };
 
     const loadHistory = async (item: HistoryItem) => {
@@ -64,17 +110,31 @@ export function useBiliConfig() {
         await browser.tabs.update({ url: item.url });
     };
 
+    const openOptions = () => {
+        browser.tabs.create({ url: browser.runtime.getURL('/options.html') });
+    };
+
+
     return {
         // 配置信号
         sH, setSH, sM, setSM, sS, setSS,
         mH, setMH, mM, setMM, mS, setMS,
         eH, setEH, eM, setEM, eS, setES,
+
+        // 页面状态信号
+        isPageReady, setIsPageReady,
+        mode, setMode,
+
         // 列表信号
         latestHistory, setLatestHistory,
         pinnedHistory, setPinnedHistory,
         // 操作方法
         initFromStorage,
+        saveMode,
         resetConfig,
+        handleApply,
+        handleArchive,
         loadHistory,
+        openOptions
     };
 }

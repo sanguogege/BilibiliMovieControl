@@ -33,9 +33,9 @@ export default defineContentScript({
       const getSeconds = (h: any, m: any, s: any) =>
         Number(h || 0) * 3600 + Number(m || 0) * 60 + Number(s || 0);
 
-      const s = data.skipStart ?? getSeconds(data.sH, data.sM, data.sS);
-      const m = data.skipEnd ?? getSeconds(data.mH, data.mM, data.mS);
-      const e = data.jumpEnd ?? getSeconds(data.eH, data.eM, data.eS);
+      const s =  getSeconds(data.sH, data.sM, data.sS);
+      const m = getSeconds(data.mH, data.mM, data.mS);
+      const e = getSeconds(data.eH, data.eM, data.eS);
 
       setConfig({ skipStart: s, skipEnd: m, jumpEnd: e });
 
@@ -65,9 +65,13 @@ export default defineContentScript({
       anchor.appendChild(mountPoint);
 
       const format = (s: number) => {
-        const min = Math.floor(s / 60);
+        const hours = Math.floor(s / 3600);
+        const min = Math.floor((s % 3600) / 60);
         const sec = Math.floor(s % 60);
-        return `${min}:${sec.toString().padStart(2, '0')}`;
+
+        const pad = (n: number) => n.toString().padStart(2, '0');
+
+        return `${hours}:${pad(min)}:${pad(sec)}`;
       };
 
       disposeUI = render(() => (

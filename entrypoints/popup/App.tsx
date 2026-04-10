@@ -11,15 +11,19 @@ export default function App() {
     sH, setSH, sM, setSM, sS, setSS,
     mH, setMH, mM, setMM, mS, setMS,
     eH, setEH, eM, setEM, eS, setES,
+    isPageReady, setIsPageReady,
+    mode, setMode,
     latestHistory, setLatestHistory,
-    pinnedHistory, setPinnedHistory,
+    pinnedHistory,
     initFromStorage,
+    saveMode,
+    handleApply,
+    handleArchive,
     resetConfig,
     loadHistory,
+    openOptions,
   } = useBiliConfig();
 
-  const [isPageReady, setIsPageReady] = createSignal(false);
-  const [mode, setMode] = createSignal<'auto' | 'manual'>('auto');
 
   onMount(async () => {
     await initFromStorage();
@@ -36,54 +40,6 @@ export default function App() {
       if (msg.type === 'REFRESH_HISTORY') setLatestHistory(msg.data);
     });
   });
-
-  const saveMode = async (newMode: 'auto' | 'manual') => {
-    setMode(newMode);
-    await browser.storage.local.set({ mode: newMode });
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    if (tabs[0]?.id) {
-      await browser.tabs.sendMessage(tabs[0].id, { type: 'SET_MODE', mode: newMode });
-    }
-  };
-
-  const handleApply = async () => {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tabs[0]?.id) return;
-
-    const configValues = { sH: sH(), sM: sM(), sS: sS(), mH: mH(), mM: mM(), mS: mS(), eH: eH(), eM: eM(), eS: eS() };
-    await browser.storage.local.set(configValues);
-
-    const config = {
-      skipStart: sH() * 3600 + sM() * 60 + sS(),
-      skipEnd: mH() * 3600 + mM() * 60 + mS(),
-      jumpEnd: eH() * 3600 + eM() * 60 + eS()
-    };
-
-    await browser.tabs.sendMessage(tabs[0].id, { type: 'UPDATE_CONFIG', ...config });
-    await browser.tabs.sendMessage(tabs[0].id, { type: 'SET_MODE', mode: mode() });
-  };
-
-  const handleArchive = async () => {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tabs[0]?.id) return;
-
-    // 呼叫后台执行存档计算
-    const response = await browser.runtime.sendMessage({
-      type: 'DO_ARCHIVE',
-      data: {
-        tab: { id: tabs[0].id, title: tabs[0].title, url: tabs[0].url },
-        config: { sH: sH(), sM: sM(), sS: sS(), mH: mH(), mM: mM(), mS: mS(), eH: eH(), eM: eM(), eS: eS() }
-      }
-    });
-
-    if (response?.pinnedHistory) {
-      setPinnedHistory(response.pinnedHistory.slice(0, 3));
-    }
-  };
-
-  const openOptions = () => {
-    browser.tabs.create({ url: browser.runtime.getURL('/options.html') });
-  };
 
   return (
     <div style={{ width: '280px', padding: '15px', display: 'flex', 'flex-direction': 'column', gap: '12px', background: '#fff' }}>
