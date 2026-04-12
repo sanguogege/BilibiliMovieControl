@@ -9,6 +9,7 @@ export default defineConfig({
     }
   },
   manifest: {
+    manifest_version: 3,
     browser_specific_settings: {
       gecko: {
         id: 'bilibili-movie-control@sanguogege.com',

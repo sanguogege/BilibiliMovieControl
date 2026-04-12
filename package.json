@@ -20,7 +20,7 @@
         "release": "bun run build:all && bun run zip:all && (bun run submit:edge || true) && (bun run submit:firefox || true)",
         "build:all": "wxt build -b firefox && wxt build -b edge",
         "zip:all": "wxt zip -b firefox && wxt zip -b edge",
-        "submit:firefox": "wxt submit --firefox-zip .output/*firefox*.zip --debug",
+        "submit:firefox": "wxt submit --firefox-zip .output/*firefox*.zip",
         "submit:edge": "wxt submit --edge-zip .output/*edge*.zip"
     }, 
     "dependencies": {
