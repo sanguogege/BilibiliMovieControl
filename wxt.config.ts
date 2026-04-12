@@ -9,6 +9,11 @@ export default defineConfig({
     }
   },
   manifest: {
+    browser_specific_settings: {
+      gecko: {
+        id: 'bilibili-movie-control@sanguogege.com',
+      },
+    },
     options_ui: {
       page: "entrypoints/options/index.html",
       open_in_tab: true, 
