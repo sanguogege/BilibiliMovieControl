@@ -90,10 +90,6 @@ export default function AboutPage() {
                 </section>
 
             </div>
-
-            <footer style={{ "text-align": "center", "margin-top": "50px", color: "#9499a0", "font-size": "13px" }}>
-                <p>© 2026 BilibiliMovieControl. 仅供学习与交流使用。</p>
-            </footer>
         </div>
     );
 }

@@ -1,6 +1,6 @@
 // entrypoints/options/pages/Home.tsx
 import { createSignal, onMount, Switch, Match } from 'solid-js';
-import { Save, CircleCheck, CircleAlert, Settings  } from 'lucide-solid';
+import { Save, CircleCheck, CircleAlert, Settings, Info  } from 'lucide-solid';
 import { browser } from 'wxt/browser';
 
 export default function Home() {
@@ -130,10 +130,12 @@ export default function Home() {
                     </Switch>
                 </button>
             </div>
-
-            {/* 底部额外说明 */}
-            <div style={{ 'margin-top': '40px', color: '#9499a0', 'font-size': '13px' }}>
-                <p>💡 此设置会即时保存到浏览器同步存储空间，并在下次视频加载时自动应用。</p>
+            <div style={{ "margin-top": "30px", padding: "15px", background: "#eef3f7", "border-radius": "8px", display: "flex", gap: "10px" }}>
+                <Info size={18} color="#00aeec" style={{ "flex-shrink": 0 }} />
+                <p style={{ margin: "0", "font-size": "12px", color: "#61666d", "line-height": "1.5" }}>
+                    <b>关于设置：</b>  此设置会即时保存到浏览器同步存储空间，并在下次视频加载时自动应用。
+                </p>
+                
             </div>
         </div>
     );

@@ -108,13 +108,13 @@ export default function HistoryPage() {
             </div>
 
             {/* 底部提示 */}
-            <footer style={{ "margin-top": "30px", padding: "15px", background: "#eef3f7", "border-radius": "8px", display: "flex", gap: "10px" }}>
+            <div style={{ "margin-top": "30px", padding: "15px", background: "#eef3f7", "border-radius": "8px", display: "flex", gap: "10px" }}>
                 <Info size={18} color="#00aeec" style={{ "flex-shrink": 0 }} />
                 <p style={{ margin: "0", "font-size": "12px", color: "#61666d", "line-height": "1.5" }}>
                     <b>关于自动存档：</b> 插件会在后台检测到视频为“合集/列表”且符合读帧条件时自动创建此记录。
                     Options 页面会保留最近的 50 条记录。
                 </p>
-            </footer>
+            </div>
         </div>
     );
 }
