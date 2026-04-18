@@ -1,5 +1,11 @@
 # B 站连播助手 (Bilibili Movie Control)
 
+## 1.1.3
+
+### Patch Changes
+
+- add firefox sources code
+
 ## 1.1.2
 
 ### Patch Changes
