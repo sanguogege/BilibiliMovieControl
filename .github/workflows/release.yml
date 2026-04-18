@@ -48,15 +48,16 @@ jobs:
 
       # 只有当上述 publish 成功执行后，才创建 GitHub Release 并挂载 ZIP
       - name: Create GitHub Release
-        if: steps.changesets.outputs.published == 'true'
+        # 修改判断条件：只要上一步成功运行了即可
+        if: steps.changesets.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
           files: |
             .output/*firefox*.zip
             .output/*edge*.zip
-          # 使用 package.json 里的新版本号作为 Tag
-          tag_name: v${{ steps.changesets.outputs.version }}
-          # 自动从 CHANGELOG.md 提取本次更新内容
+            .output/*sources*.zip
+          # 使用前面步骤提取的可靠版本号
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
