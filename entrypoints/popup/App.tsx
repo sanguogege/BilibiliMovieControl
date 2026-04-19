@@ -1,19 +1,18 @@
 // entrypoints/popup/App.tsx
-import { onMount, Show, For, createSignal } from 'solid-js';
+import { onMount, Show, For, createSignal, Switch } from 'solid-js';
 import { useBiliConfig } from '@/hooks/useBiliConfig';
 import { TimeInput } from '@/components/TimeInput';
 import { HistoryList } from '@/components/HistoryList';
+import { TimeRangeManager } from '@/components/TimeRangeItem';
 import { browser } from 'wxt/browser';
-import { Settings } from 'lucide-solid';
+import { Settings,Clock } from 'lucide-solid';
+
 
 import { getSoftName } from '@/utils/bili';
 
 
 export default function App() {
   const {
-    sH, setSH, sM, setSM, sS, setSS,
-    mH, setMH, mM, setMM, mS, setMS,
-    eH, setEH, eM, setEM, eS, setES,
     isPageReady, setIsPageReady,
     mode, setMode,
     latestHistory, setLatestHistory,
@@ -26,15 +25,13 @@ export default function App() {
     openOptions,
   } = useBiliConfig();
 
-
+  const [showTimeManager, setShowTimeManager] = createSignal(false);
   const [isApplying, setIsApplying] = createSignal(false);
   const [isArchiving, setIsArchiving] = createSignal(false);
 
-  // 封装应用逻辑
   const onApply = async (type: "setting" | "reset") => {
     setIsApplying(true);
     await applyConfig(type);
-    // 模拟一个短暂的延迟让用户感知“保存中”状态，如果是纯同步可去掉 setTimeout
     setTimeout(() => setIsApplying(false), 800);
   };
 
@@ -65,7 +62,6 @@ export default function App() {
     if (activeTab?.id && activeTab.url?.includes('bilibili.com/video')) {
       try {
         const resp = await browser.tabs.sendMessage(activeTab.id, { type: 'QUERY_READY_STATUS' });
-        console.log(resp);
         if (resp) setIsPageReady(resp.isCollection);
       } catch (e) {
         setIsPageReady(false);
@@ -82,7 +78,7 @@ export default function App() {
   });
 
   return (
-    <div style={{ width: '280px', padding: '15px', display: 'flex', 'flex-direction': 'column', gap: '12px', background: '#fff' }}>
+    <div style={{ position: 'relative', width: '280px', padding: '15px', display: 'flex', 'flex-direction': 'column', gap: '12px', background: '#fff' }}>
       <h3 style={{ display: 'flex', "align-items": 'center', "justify-content": 'center', margin: '0', 'font-size': '16px', color: '#fb7299' }}>
         {getSoftName()}
         <span style={{ 'font-size': '10px', 'margin-left': '6px', padding: '2px 4px', background: isPageReady() ? '#4caf50' : '#9e9e9e', color: 'white', 'border-radius': '3px' }}>
@@ -132,12 +128,33 @@ export default function App() {
         </For>
       </div>
 
+      <button
+        onClick={() => setShowTimeManager(true)}
+        style={{
+          display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '6px',
+          padding: '8px', background: '#fff', color: '#fb7299', border: '1px solid #fb7299',
+          'border-radius': '6px', cursor: 'pointer', 'font-size': '13px', 'font-weight': 'bold',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#fff0f3'}
+        onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
+      >
+        <Clock size={16} /> 管理多个跳过时间段
+      </button>
+
+      <Show when={showTimeManager()}>
+        <TimeRangeManager onClose={() => setShowTimeManager(false)}/>
+      </Show>
+
       <div style={{ display: 'flex', 'flex-direction': 'column', gap: '10px' }}>
-        <TimeInput label="从" hour={sH()} minute={sM()} second={sS()} onHourChange={setSH} onMinuteChange={setSM} onSecondChange={setSS} />
-        <TimeInput label="至" hour={mH()} minute={mM()} second={mS()} onHourChange={setMH} onMinuteChange={setMM} onSecondChange={setMS} />
-        <Show when={mode() === 'manual'}>
-          <TimeInput label="切" hour={eH()} minute={eM()} second={eS()} onHourChange={setEH} onMinuteChange={setEM} onSecondChange={setES} />
-        </Show>
+        <Switch>
+          <Match when={mode() === 'auto'}>
+            <TimeInput label="帧" hour={eH()} minute={eM()} second={eS()} onHourChange={setEH} onMinuteChange={setEM} onSecondChange={setES} />
+          </Match>
+          <Match when={mode() === 'manual'}>
+            <TimeInput label="切" hour={eH()} minute={eM()} second={eS()} onHourChange={setEH} onMinuteChange={setEM} onSecondChange={setES} />
+          </Match>
+        </Switch>
       </div>
 
       <div style={{ display: 'flex', gap: '6px' }}>

@@ -12,7 +12,7 @@ interface TimeInputProps {
 
 const inputStyle = {
     "flex": "1",
-    'width': '45px',
+    'width': '30px',
     'padding': '4px',
     'border': '1px solid #ddd',
     'border-radius': '4px',
