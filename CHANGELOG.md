@@ -1,5 +1,15 @@
 # B 站连播助手 (Bilibili Movie Control)
 
+## 1.2.0
+
+### Minor Changes
+
+- - 添加精准时间设置，用户可设置精准的小时，分钟，秒来决定帧分析的进入点。
+
+  - 增加 popup 页面的样式，提供更好的效果。
+
+  - 修复一些小问题。
+
 ## 1.1.3
 
 ### Patch Changes
