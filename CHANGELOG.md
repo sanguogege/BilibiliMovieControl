@@ -1,5 +1,11 @@
 # B 站连播助手 (Bilibili Movie Control)
 
+## 1.2.1
+
+### Patch Changes
+
+- Refactor: internal build optimization
+
 ## 1.2.0
 
 ### Minor Changes
