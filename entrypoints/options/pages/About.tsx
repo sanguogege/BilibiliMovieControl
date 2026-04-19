@@ -100,8 +100,11 @@ export default function AboutPage() {
                         <div style={{ display: "flex", gap: "40px" }}>
                             <div style={{ flex: 1 }}>
                                 <p style={cardTextStyle}>
-                                    <strong>读帧起始进度：</strong> 可调节分析起始点。设置 90% 以上可显著降低 CPU 占用；针对有超长后记的合集，建议调低数值。
+                                    <strong>读帧起始进度：</strong> <br />
+                                    1、可调节分析起始点。设置 90% 以上可显著降低 CPU 占用；针对有超长后记的合集，建议调低数值。<br/>
+                                    2、设置精准时间点，如 00:01:30，插件将从该时间点开始分析，以防百分比模式误差过大。
                                 </p>
+                               
                             </div>
                             <div style={tagBoxStyle}>
                                 <span style={tagStyle}><Cpu size={12} /> 动态 CPU 优化技术已启用</span>

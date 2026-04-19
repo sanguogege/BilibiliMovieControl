@@ -22,13 +22,17 @@ export default defineContentScript({
     const [isAnalyzing, setIsAnalyzing] = createSignal(false);
     const [threshold, setThreshold] = createSignal(85);
 
+    // 新增两个状态，仅用于 UI 显示和逻辑判断转换
+    const [useManualTime, setUseManualTime] = createSignal(false);
+    const [manualSeconds, setManualSeconds] = createSignal(0);
+
     let lastUrl = location.href;
     let lastJumpTime = 0;
     let disposeUI: (() => void) | null = null;
 
     // --- 2. 核心辅助函数 ---
 
-    // 配置解析 (秒数转换)
+    // 配置解析 (在此处统一转换逻辑)
     const updateConfig = (data: any) => {
       const getSeconds = (h: any, m: any, s: any) =>
         Number(h || 0) * 3600 + Number(m || 0) * 60 + Number(s || 0);
@@ -39,20 +43,23 @@ export default defineContentScript({
 
       setConfig({ skipStart: s, skipEnd: m, jumpEnd: e });
 
+      // 同步新字段
+      if (data.useManualTime !== undefined) setUseManualTime(data.useManualTime);
+      if (data.manualSeconds !== undefined) setManualSeconds(data.manualSeconds);
+
+      // 统一设置分析阈值
       if (data.frameThreshold !== undefined) {
         setThreshold(data.frameThreshold);
         updateAnalyzerConfig({
           endingPercentThreshold: data.frameThreshold,
-          minRemainingSeconds: 999999, // 禁用剩余时间限制
+          minRemainingSeconds: 999999,
         });
       }
     };
 
     // UI 挂载
     const mountUI = () => {
-      // 只有是合集页才挂载
       if (!isCollectionPage()) return;
-
       const anchor = document.getElementById('viewbox_report') ||
         document.querySelector('.video-info-title') ||
         document.querySelector('.cl-info-title');
@@ -81,7 +88,11 @@ export default defineContentScript({
           }}>
             <span>⏭ {format(config().skipStart)}-{format(config().skipEnd)}</span>
             <span style={{ opacity: 0.5 }}>|</span>
-            <span>🏁 {mode() === 'manual' ? `切集: ${format(config().jumpEnd)}` : `自动(${threshold()}%) ${isAnalyzing() ? '分析中...' : '待机'}`}</span>
+            <span>
+              🏁 {mode() === 'manual'
+                ? `切集: ${format(config().jumpEnd)}`
+                : `${useManualTime() ? '定时' : `自动(${threshold()}%)`} ${isAnalyzing() ? '分析中...' : '待机'}`}
+            </span>
           </div>
         </Show>
       ), mountPoint);
@@ -91,7 +102,6 @@ export default defineContentScript({
     const executeJump = () => {
       const now = Date.now();
       if (now - lastJumpTime < 3000) return;
-
       const nextBtn = document.querySelector('.bpx-player-ctrl-next') as HTMLElement;
       if (nextBtn) {
         lastJumpTime = now;
@@ -100,7 +110,6 @@ export default defineContentScript({
       }
     };
 
-    // 控制逻辑
     const runControlLogic = () => {
       const video = getMainVideo();
       if (!video || video.readyState < 2) {
@@ -111,20 +120,28 @@ export default defineContentScript({
       const cur = video.currentTime;
       const { skipStart, skipEnd, jumpEnd } = config();
 
-      // A. 跳过片头
       if (skipEnd > 0 && cur >= skipStart && cur < skipEnd) {
         video.currentTime = skipEnd;
         return;
       }
 
-      // B. 跳过片尾
       if (mode() === 'manual') {
         if (jumpEnd > 0 && cur >= jumpEnd) executeJump();
       } else {
-        const progress = (cur / video.duration) * 100;
-        if (progress >= threshold()) {
+        const currentProgress = (cur / video.duration) * 100;
+        const isInAnalyzeZone = useManualTime()
+          ? cur >= manualSeconds()
+          : currentProgress >= threshold();
+
+        if (isInAnalyzeZone) {
           setIsAnalyzing(true);
-          if (checkEndingByFrame(video, !video.paused, threshold())) {
+
+          // --- 修改点：确保分析器准入 ---
+          // 如果是精确时间模式，我们认为已经到达了“可跳转区域”
+          // 传 0 或者 传一个极小值，确保 checkEndingByFrame 内部的百分比检查永远通过
+          const testThreshold = useManualTime() ? 0 : threshold();
+
+          if (checkEndingByFrame(video, !video.paused, testThreshold)) {
             executeJump();
             setIsAnalyzing(false);
           }
@@ -135,18 +152,17 @@ export default defineContentScript({
     };
 
     // --- 3. 初始化与主监听 ---
-
-    // 初始加载
     const stored = await browser.storage.local.get([
       'sH', 'sM', 'sS', 'mH', 'mM', 'mS', 'eH', 'eM', 'eS',
-      'mode', 'frameThreshold'
+      'mode', 'frameThreshold', 'useManualTime', 'manualSeconds'
     ]);
-    const initialThreshold = (stored.frameThreshold as number) ?? 85;
+
     setMode(stored.mode === 'manual' ? 'manual' : 'auto');
     updateConfig(stored);
+
+    const initialThreshold = (stored.frameThreshold as number) ?? 85;
     initFrameAnalyzer({ endingPercentThreshold: initialThreshold, minRemainingSeconds: 999999 });
 
-    // 消息监听 (来自 Popup/Options)
     const handleMessage = (msg: any, sender: any, sendResponse: any) => {
       if (msg.type === 'UPDATE_CONFIG' || msg.type === 'CONFIG_UPDATED') updateConfig(msg.data || msg);
       if (msg.type === 'SET_MODE') setMode(msg.mode);
@@ -157,27 +173,23 @@ export default defineContentScript({
     };
     browser.runtime.onMessage.addListener(handleMessage);
 
-    // --- 4. 主循环 (带哨兵检测) ---
+    // --- 4. 主循环 ---
     const mainTimer = setInterval(() => {
-      // [哨兵检测]：不在合集页直接跳过后续所有逻辑
       const isCol = !!(document.querySelector('.video-pod') ||
         document.querySelector('.multi-page') ||
         document.querySelector('.cur-list'));
 
-      if (isCol !== isCollectionPage()) 
-        {
-          setIsCollectionPage(isCol)
+      if (isCol !== isCollectionPage()) {
+        setIsCollectionPage(isCol);
         browser.runtime.sendMessage({ type: 'SYNC_PAGE_READY', isCollection: isCol }).catch(() => { });
-        };
+      };
 
       if (!isCol) {
-        // 如果从合集跳到了非合集，清理 UI
         const ui = document.getElementById('bili-skip-wrapper-unique');
         if (ui) ui.remove();
         return;
       }
 
-      // 处理单页地址变换
       if (location.href !== lastUrl) {
         lastUrl = location.href;
         lastJumpTime = 0;
