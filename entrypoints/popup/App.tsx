@@ -1,5 +1,5 @@
 // entrypoints/popup/App.tsx
-import { onMount, Show, For } from 'solid-js';
+import { onMount, Show, For, createSignal } from 'solid-js';
 import { useBiliConfig } from '@/hooks/useBiliConfig';
 import { TimeInput } from '@/components/TimeInput';
 import { HistoryList } from '@/components/HistoryList';
@@ -26,6 +26,34 @@ export default function App() {
     openOptions,
   } = useBiliConfig();
 
+
+  const [isApplying, setIsApplying] = createSignal(false);
+  const [isArchiving, setIsArchiving] = createSignal(false);
+
+  // 封装应用逻辑
+  const onApply = async (type: "setting" | "reset") => {
+    setIsApplying(true);
+    await applyConfig(type);
+    // 模拟一个短暂的延迟让用户感知“保存中”状态，如果是纯同步可去掉 setTimeout
+    setTimeout(() => setIsApplying(false), 800);
+  };
+
+  // 封装存档逻辑
+  const onArchive = async () => {
+    setIsArchiving(true);
+    await handleArchive();
+    setTimeout(() => setIsArchiving(false), 800);
+  };
+
+  // 通用 Hover 处理函数
+  const handleMouseEnter = (e: MouseEvent, color: string) => {
+    (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1.1)';
+    (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 2px 8px ${color}66`;
+  };
+  const handleMouseLeave = (e: MouseEvent) => {
+    (e.currentTarget as HTMLButtonElement).style.filter = 'none';
+    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+  };
 
   onMount(async () => {
     await initFromStorage();
@@ -113,9 +141,50 @@ export default function App() {
       </div>
 
       <div style={{ display: 'flex', gap: '6px' }}>
-        <button onClick={[applyConfig,"setting"]} style={{ flex: 1, background: '#fb7299', color: 'white', border: 'none', padding: '8px 4px', 'border-radius': '6px', cursor: 'pointer', 'font-weight': 'bold' }}>应用</button>
-        <button onClick={[applyConfig, "reset"]} style={{ flex: 1, background: '#e3e5e7', color: '#61666d', border: 'none', padding: '8px 4px', 'border-radius': '6px', cursor: 'pointer' }}>重置</button>
-        <button onClick={handleArchive} style={{ flex: 1, background: '#00aeec', color: 'white', border: 'none', padding: '8px 4px', 'border-radius': '6px', cursor: 'pointer', 'font-weight': 'bold' }}>存档</button>
+        <button
+          onClick={() => onApply("setting")}
+          disabled={isApplying()}
+          onMouseEnter={(e) => handleMouseEnter(e, '#fb7299')}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            flex: 1.2, background: '#fb7299', color: 'white', border: 'none',
+            padding: '8px 4px', 'border-radius': '6px', cursor: isApplying() ? 'default' : 'pointer',
+            'font-weight': 'bold', transition: 'all 0.2s',
+            opacity: isApplying() ? 0.8 : 1
+          }}
+        >
+          {isApplying() ? '保存中...' : '应用'}
+        </button>
+
+        {/* 重置按钮 */}
+        <button
+          onClick={() => onApply("reset")}
+          onMouseEnter={(e) => handleMouseEnter(e, '#e3e5e7')}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            flex: 1, background: '#e3e5e7', color: '#61666d', border: 'none',
+            padding: '8px 4px', 'border-radius': '6px', cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          重置
+        </button>
+
+        {/* 存档按钮 */}
+        <button
+          onClick={onArchive}
+          disabled={isArchiving()}
+          onMouseEnter={(e) => handleMouseEnter(e, '#00aeec')}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            flex: 1.2, background: '#00aeec', color: 'white', border: 'none',
+            padding: '8px 4px', 'border-radius': '6px', cursor: isArchiving() ? 'default' : 'pointer',
+            'font-weight': 'bold', transition: 'all 0.2s',
+            opacity: isArchiving() ? 0.8 : 1
+          }}
+        >
+          {isArchiving() ? '存档中...' : '存档'}
+        </button>
       </div>
 
       <HistoryList latest={latestHistory()} pinned={pinnedHistory()} onLoadHistory={loadHistory} />
