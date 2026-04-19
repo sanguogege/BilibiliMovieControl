@@ -8,6 +8,12 @@ import { browser } from 'wxt/browser';
 import { Settings,Clock } from 'lucide-solid';
 
 
+// TODO 1. 统一按钮样式，添加 hover 效果，写成一个组件
+// TODO 2. 添加组件操作反馈（如应用配置时按钮变色并显示“保存中...”）
+// TODO 3. 去除设置页的不必要页面。
+// TODO 4. 优化存档功能的用户体验（如添加确认提示、存档成功反馈等）
+
+
 import { getSoftName } from '@/utils/bili';
 
 
