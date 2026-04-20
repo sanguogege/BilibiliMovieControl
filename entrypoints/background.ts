@@ -87,13 +87,14 @@ export default defineBackground(() => {
         });
 
         const newItem: HistoryItem = {
+          id: tabId,
           title: colTitle,
           url: cleanedUrl,
           time: now,
           opRanges: storage.opRanges as TimeRange[],
           frameConfig: storage.frameConfig as TimePoint,
           jumpConfig: storage.jumpConfig as TimePoint,
-          mode: storage.mode as 'auto' | 'manual'
+          mode: storage.mode as 'frame' | 'manual'
         };
 
         const history = (storage.latestHistory as any[]) || [];

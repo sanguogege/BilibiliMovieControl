@@ -65,7 +65,7 @@ export default function Home() {
             <header style={{ "margin-bottom": "40px" }}>
                 <div>
                     <h1 style={{ "font-size": "32px", margin: "0 0 12px 0", color: "#fb7299", "display": "flex", "align-items": "center", gap: "12px" }}>
-                        <Settings size={36} /> 全局配置
+                        <Settings size={36} /> 全局配置 暂停
                     </h1>
                     <p style={{ color: "#61666d", "font-size": "16px", "line-height": "1.6" }}>
                         调整插件的自动化运行参数，优化性能与准确度

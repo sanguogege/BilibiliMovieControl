@@ -30,7 +30,7 @@ export default defineContentScript({
         });
 
         const [isCollectionPage, setIsCollectionPage] = createSignal(false);
-        const [mode, setMode] = createSignal<"auto" | "manual">("auto");
+        const [mode, setMode] = createSignal<"frame" | "manual">("frame");
         const [isAnalyzing, setIsAnalyzing] = createSignal(false);
 
         let lastUrl = location.href;

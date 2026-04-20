@@ -7,8 +7,6 @@ import { TimeRangeManager } from '@/components/TimeRangeItem';
 import { browser } from 'wxt/browser';
 import { Settings, Clock } from 'lucide-solid';
 
-
-// TODO 1. 统一按钮样式，添加 hover 效果，写成一个组件
 // TODO 2. 添加组件操作反馈（如应用配置时按钮变色并显示“保存中...”）
 // TODO 3. 去除设置页的不必要页面。
 // TODO 4. 优化存档功能的用户体验（如添加确认提示、存档成功反馈等）
@@ -38,30 +36,11 @@ export default function App() {
     } = useBiliConfig();
 
     const [showTimeManager, setShowTimeManager] = createSignal(false);
-    const [isApplying, setIsApplying] = createSignal(false);
-    const [isArchiving, setIsArchiving] = createSignal(false);
 
-    const onApply = async (type: "setting" | "reset") => {
-        setIsApplying(true);
-        await applyConfig(type);
-        setTimeout(() => setIsApplying(false), 800);
-    };
 
     onMount(async () => {
         await initFromStorage();
-        const res = await browser.storage.local.get('mode');
-        setMode(res.mode === 'manual' ? 'manual' : 'auto');
 
-        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-        const activeTab = tabs[0];
-        if (activeTab?.id && activeTab.url?.includes('bilibili.com/video')) {
-            try {
-                const resp = await browser.tabs.sendMessage(activeTab.id, { type: 'QUERY_READY_STATUS' });
-                if (resp) setIsPageReady(resp.isCollection);
-            } catch (e) {
-                setIsPageReady(false);
-            }
-        }
         // 监听后台的自动更新广播
         browser.runtime.onMessage.addListener((msg) => {
             if (msg.type === 'SYNC_PAGE_READY') {
@@ -78,8 +57,6 @@ export default function App() {
                 <span style={{ 'font-size': '10px', 'margin': '0 6px', padding: '2px 4px', background: isPageReady() ? '#4caf50' : '#9e9e9e', color: 'white', 'border-radius': '3px' }}>
                     {isPageReady() ? '已就绪' : '待命中'}
                 </span>
-
-
                 <StyledButton
                     variant="ghost"
                     size='small'
@@ -89,11 +66,11 @@ export default function App() {
             </h3>
 
             <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center' }}>
-                <For each={['auto', 'manual'] as const}>
+                <For each={['frame', 'manual'] as const}>
                     {(m) => (
                         <label style={{ display: 'flex', 'align-items': 'center', gap: '4px', 'font-size': '12px', cursor: 'pointer' }}>
                             <input type="radio" name="mode" checked={mode() === m} onChange={() => saveMode(m)} />
-                            {m === 'auto' ? '自动检测' : '手动切集'}
+                            {m === 'frame' ? '帧分析' : '手动切集'}
                         </label>
                     )}
                 </For>
@@ -107,16 +84,33 @@ export default function App() {
                 icon={<Clock size={14} />}>管理多个跳过时间段</StyledButton>
 
             <Show when={showTimeManager()}>
-                <TimeRangeManager onClose={() => setShowTimeManager(false)} />
+                <TimeRangeManager ranges={opRanges()} onUpdate={setOpRanges} onClose={() => setShowTimeManager(false)} />
             </Show>
 
             <div style={{ display: 'flex', 'flex-direction': 'column', gap: '10px' }}>
                 <Switch>
-                    <Match when={mode() === 'auto'}>
-                        <TimeInput label="帧" hour={frameConfig().h} minute={frameConfig().m} second={frameConfig().s} onHourChange={setFrameConfig} onMinuteChange={setFrameConfig} onSecondChange={setFrameConfig} />
+                    <Match when={mode() === 'frame'}>
+                        <TimeInput
+                            label="帧"
+                            hour={frameConfig().h}
+                            minute={frameConfig().m}
+                            second={frameConfig().s}
+                            // 必须通过展开运算符更新特定字段
+                            onHourChange={(val) => setFrameConfig({ ...frameConfig(), h: val })}
+                            onMinuteChange={(val) => setFrameConfig({ ...frameConfig(), m: val })}
+                            onSecondChange={(val) => setFrameConfig({ ...frameConfig(), s: val })}
+                        />
                     </Match>
                     <Match when={mode() === 'manual'}>
-                        <TimeInput label="切" hour={jumpConfig().h} minute={jumpConfig().m} second={jumpConfig().s} onHourChange={setJumpConfig} onMinuteChange={setJumpConfig} onSecondChange={setJumpConfig} />
+                        <TimeInput
+                            label="切"
+                            hour={jumpConfig().h}
+                            minute={jumpConfig().m}
+                            second={jumpConfig().s}
+                            onHourChange={(val) => setJumpConfig({ ...jumpConfig(), h: val })}
+                            onMinuteChange={(val) => setJumpConfig({ ...jumpConfig(), m: val })}
+                            onSecondChange={(val) => setJumpConfig({ ...jumpConfig(), s: val })}
+                        />
                     </Match>
                 </Switch>
             </div>
@@ -126,7 +120,7 @@ export default function App() {
                 <StyledButton
                     variant="primary"
                     loadingText="保存中..."
-                    onClick={[onApply, "setting"]}
+                    onClick={[applyConfig, "setting"]}
 
                     icon={<Settings size={14} />}>应用</StyledButton>
 
@@ -134,14 +128,14 @@ export default function App() {
                     variant="reset"
                     loadingText="重置中..."
                     // onClick={() => onApply("reset")}
-                    onClick={[onApply, "reset"]}
+                    onClick={[applyConfig, "reset"]}
                     icon={<Settings size={14} />}>重置</StyledButton>
 
 
                 <StyledButton
                     variant="secondary"
                     loadingText="存档中..."
-                    onClick={[onApply, "archive"]}
+                    onClick={handleArchive}
                     icon={<Settings size={14} />}>存档</StyledButton>
             </div>
 

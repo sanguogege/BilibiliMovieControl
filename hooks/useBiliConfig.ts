@@ -13,7 +13,7 @@ export const useBiliConfig = () => {
     const [jumpConfig, setJumpConfig] = createSignal<TimePoint>({ h: 0, m: 0, s: 0 });
 
     // --- 4. 基础状态 ---
-    const [mode, setMode] = createSignal<'auto' | 'manual'>('auto');
+    const [mode, setMode] = createSignal<'frame' | 'manual'>('frame');
     const [isPageReady, setIsPageReady] = createSignal(false);
     const [latestHistory, setLatestHistory] = createSignal<HistoryItem[]>([]);
     const [pinnedHistory, setPinnedHistory] = createSignal<HistoryItem[]>([]);
@@ -27,13 +27,25 @@ export const useBiliConfig = () => {
             'frameConfig',
             'jumpConfig',
             'mode',
-            'videoHistory'
+            'latestHistory',
+            'pinnedHistory'
         ]);
+
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        const activeTab = tabs[0];
+        if (activeTab?.id && activeTab.url?.includes('bilibili.com/video')) {
+            try {
+                const resp = await browser.tabs.sendMessage(activeTab.id, { type: 'QUERY_READY_STATUS' });
+                if (resp) setIsPageReady(resp.isCollection);
+            } catch (e) {
+                setIsPageReady(false);
+            }
+        }
 
         if (res.opRanges) setOpRanges(res.opRanges as TimeRange[]);
         if (res.frameConfig) setFrameConfig(res.frameConfig as TimePoint);
         if (res.jumpConfig) setJumpConfig(res.jumpConfig as TimePoint);
-        if (res.mode) setMode(res.mode as 'auto' | 'manual');
+        if (res.mode) setMode(res.mode as 'frame' | 'manual');
 
         if (Array.isArray(res.latestHistory)) setLatestHistory(res.latestHistory.slice(0, 2) as HistoryItem[]);
         if (Array.isArray(res.pinnedHistory)) setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryItem[]);
@@ -43,7 +55,7 @@ export const useBiliConfig = () => {
     /**
      * 保存模式切换
      */
-    const saveMode = async (newMode: 'auto' | 'manual') => {
+    const saveMode = async (newMode: 'frame' | 'manual') => {
         setMode(newMode);
         await browser.storage.local.set({ mode: newMode });
     };
@@ -54,7 +66,7 @@ export const useBiliConfig = () => {
     const applyConfig = async (type: 'setting' | 'reset') => {
         if (type === 'reset') {
             const zero = { h: 0, m: 0, s: 0 };
-            if (mode() === 'auto') {
+            if (mode() === 'frame') {
                 setFrameConfig(zero);
             } else {
                 setJumpConfig(zero);
@@ -71,7 +83,7 @@ export const useBiliConfig = () => {
         // 1. 持久化
         await browser.storage.local.set(configData);
 
-        // 2. 实时同步给当前 B 站标签页
+        // 2. 实时同步给当前 B站标签页
         const tabs = await browser.tabs.query({ active: true, currentWindow: true });
         const activeTab = tabs[0];
         if (activeTab?.id && activeTab.url?.includes('bilibili.com/video')) {
@@ -90,11 +102,13 @@ export const useBiliConfig = () => {
      * 存档逻辑：将当前配置存入历史记录
      */
     const handleArchive = async () => {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        const activeTab = tabs[0];
         const currentData
             : HistoryItem = {
-            id: Date.now(),
-            title: document.title,
-            url: window.location.href,
+            id: activeTab?.id || Date.now(), 
+            title: activeTab.title || '未知标题',
+            url: activeTab.url || '',
             time: Date.now(),
             mode: mode(),
             opRanges: opRanges(),
@@ -107,17 +121,18 @@ export const useBiliConfig = () => {
         const newHistory = [currentData, ...history].slice(0, 50); // 最多保留50条记录
 
         await browser.storage.local.set({ pinnedHistory: newHistory });
-        setLatestHistory(newHistory);
+        setLatestHistory(newHistory.slice(0, 2));
     };
 
     /**
-     * 加载历史记录到当前编辑区
+     * 加载历史记录到当前页面
      */
-    const loadHistory = (item: any) => {
+    const loadHistory = async (item: HistoryItem) => {
         if (item.opRanges) setOpRanges(item.opRanges);
         if (item.frameConfig) setFrameConfig(item.frameConfig);
         if (item.jumpConfig) setJumpConfig(item.jumpConfig);
         if (item.mode) setMode(item.mode);
+        await browser.tabs.update({ url: item.url });
     };
 
     /**

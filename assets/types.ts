@@ -2,7 +2,7 @@ export interface BiliVideoConfig {
     opRanges: TimeRange[]; // 跳过列表
     frameConfig: TimePoint; // 帧分析点
     jumpConfig: TimePoint; // 手动切集点
-    mode: "auto" | "manual"; // 当前模式
+    mode: "frame" | "manual"; // 当前模式
 }
 
 export interface HistoryItem extends BiliVideoConfig {

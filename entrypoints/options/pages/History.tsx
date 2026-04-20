@@ -64,7 +64,7 @@ export default function HistoryPage() {
                                     {item.title}
                                 </div>
                                 <div style={{ display: "flex", gap: "20px", "font-size": "13px", color: "#61666d" }}>
-                                    <span>⏱️ 跳过: {item.config.sM}分{item.config.sS}秒 - {item.config.mM}分{item.config.mS}秒</span>
+                                    <span>⏱️ 跳过: {item.frameConfig.m}分{item.frameConfig.s}秒 - {item.frameConfig.m}分{item.frameConfig.s}秒</span>
                                     <span>📅 记录于: {new Date(item.time).toLocaleString()}</span>
                                 </div>
                             </div>
