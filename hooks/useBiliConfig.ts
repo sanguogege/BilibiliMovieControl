@@ -92,6 +92,7 @@ export const useBiliConfig = () => {
     const handleArchive = async () => {
         const currentData
             : HistoryItem = {
+            id: Date.now(),
             title: document.title,
             url: window.location.href,
             time: Date.now(),
@@ -123,7 +124,7 @@ export const useBiliConfig = () => {
      * 打开配置页
      */
     const openOptions = () => {
-        browser.runtime.openOptionsPage();
+        browser.tabs.create({ url: browser.runtime.getURL('/options.html') });
     };
 
     return {
