@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { browser } from "wxt/browser";
 import { TimePoint, TimeRange, HistoryItem } from "@/assets/types";
 
-import { sendToActiveTab } from "@/utils/bili";
+import { getActiveTab, sendToActiveTab } from "@/utils/bili";
 
 export const useBiliConfig = () => {
     // --- 1. 跳过列表 (用于 TimeRangeManager 弹窗) ---
@@ -64,9 +64,10 @@ export const useBiliConfig = () => {
     const saveMode = async (newMode: "frame" | "manual") => {
         setMode(newMode);
         await browser.storage.local.set({ mode: newMode });
+    
         await sendToActiveTab({
-            type: "SET_MODE",
-            mode: newMode,
+            type: "UPDATE_CONFIG",
+            data: {mode: newMode},
         });
     };
 
@@ -103,16 +104,21 @@ export const useBiliConfig = () => {
      * 存档逻辑：将当前配置存入历史记录
      */
     const handleArchive = async () => {
-        const tabs = await browser.tabs.query({
-            active: true,
-            currentWindow: true,
-        });
-        if (!tabs[0]?.id) return;
+        const activeTab = await getActiveTab();
+        console.log(activeTab);
+        // 2. 校验逻辑依然保持，但代码更整洁
+        if (!activeTab?.id) return;
 
+        // 3. 发送存档请求
         const response = await browser.runtime.sendMessage({
             type: "DO_ARCHIVE",
             data: {
-                tab: { id: tabs[0].id, title: tabs[0].title, url: tabs[0].url },
+                // 这里利用 getActiveTab 返回的对象
+                tab: { 
+                    id: activeTab.id, 
+                    title: activeTab.title, 
+                    url: activeTab.url 
+                },
                 config: {
                     mode: mode(),
                     opRanges: opRanges(),
@@ -121,7 +127,7 @@ export const useBiliConfig = () => {
                 },
             },
         });
-        
+
         if (response?.pinnedHistory) {
             setPinnedHistory(response.pinnedHistory);
         }
@@ -133,6 +139,10 @@ export const useBiliConfig = () => {
     const handleUpdateOpRanges = async (newRanges: TimeRange[]) => {
         setOpRanges(newRanges);
         await browser.storage.local.set({ opRanges: newRanges });
+        await sendToActiveTab({
+            type: "UPDATE_CONFIG",
+            data: { opRanges:newRanges },
+        });
     };
 
     /**

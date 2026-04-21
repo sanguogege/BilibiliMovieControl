@@ -191,7 +191,6 @@ export default defineContentScript({
             if (msg.type === "UPDATE_CONFIG") {
                 updateConfig(msg.data);
             }
-            if (msg.type === "SET_MODE") setMode(msg.mode);
             if (msg.type === "QUERY_READY_STATUS") {
                 sendResponse({ isCollection: isCollectionPage() });
             }

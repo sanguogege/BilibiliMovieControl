@@ -3,7 +3,7 @@ import { browser } from 'wxt/browser';
 /**
  * 检测当前页面是否为合集页，并返回合集标题
  */
-export const getBiliCollection = async (tabId: number): Promise<string> => {
+export const getCollectionTitle = async (tabId: number): Promise<string> => {
     try {
         const results = await browser.scripting.executeScript({
             target: { tabId },

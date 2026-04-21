@@ -1,5 +1,5 @@
 import { browser } from "wxt/browser";
-import { getBiliCollection } from "@/utils/bili";
+import { getCollectionTitle } from "@/utils/bili";
 import { HistoryItem, TimePoint, TimeRange } from "../assets/types";
 
 const DEBOUNCE_TIME = 2000;
@@ -29,33 +29,35 @@ export default defineBackground(() => {
      */
     const handleArchiveLogic = async (activeTab: any, config: any) => {
         const cleanedUrl = cleanBiliUrl(activeTab.url || "");
+        const colTitle = await getCollectionTitle(activeTab.id);
+        if (colTitle) {
+            const currentData: HistoryItem = {
+                id: activeTab?.id || Date.now(),
+                title: colTitle,
+                url: cleanedUrl, // 使用清洗后的 URL
+                time: Date.now(),
+                mode: config.mode,
+                opRanges: config.opRanges,
+                frameConfig: config.frameConfig,
+                jumpConfig: config.jumpConfig,
+            };
 
-        const currentData: HistoryItem = {
-            id: activeTab?.id || Date.now(),
-            title: activeTab.title || "未知标题",
-            url: cleanedUrl, // 使用清洗后的 URL
-            time: Date.now(),
-            mode: config.mode,
-            opRanges: config.opRanges,
-            frameConfig: config.frameConfig,
-            jumpConfig: config.jumpConfig,
-        };
+            const res = await browser.storage.local.get("pinnedHistory");
+            const history = (res.pinnedHistory as HistoryItem[]) || [];
 
-        const res = await browser.storage.local.get("pinnedHistory");
-        const history = (res.pinnedHistory as HistoryItem[]) || [];
+            // --- 2. 唯一性去重 ---
+            const filteredHistory = history.filter(
+                (item: HistoryItem) => cleanBiliUrl(item.url) !== cleanedUrl
+            );
 
-        // --- 2. 唯一性去重 ---
-        const filteredHistory = history.filter(
-            (item: HistoryItem) => cleanBiliUrl(item.url) !== cleanedUrl
-        );
+            const newHistory = [currentData, ...filteredHistory].slice(
+                0,
+                MAX_HISTORY_LENGTH,
+            );
 
-        const newHistory = [currentData, ...filteredHistory].slice(
-            0,
-            MAX_HISTORY_LENGTH,
-        );
-
-        await browser.storage.local.set({ pinnedHistory: newHistory });
-        return newHistory.slice(0, 3);
+            await browser.storage.local.set({ pinnedHistory: newHistory });
+            return newHistory.slice(0, 3);
+        }
     };
 
     /**
@@ -82,7 +84,7 @@ export default defineBackground(() => {
                 if (firstKey) processedLogs.delete(firstKey);
             }
 
-            const colTitle = await getBiliCollection(tabId);
+            const colTitle = await getCollectionTitle(tabId);
             if (colTitle) {
                 // 读取当前最新的配置快照
                 const storage = await browser.storage.local.get({
@@ -90,7 +92,7 @@ export default defineBackground(() => {
                     opRanges: [],
                     frameConfig: { h: 0, m: 0, s: 0 },
                     jumpConfig: { h: 0, m: 0, s: 0 },
-                    mode: "auto",
+                    mode: "frame",
                 });
 
                 const newItem: HistoryItem = {
@@ -121,7 +123,7 @@ export default defineBackground(() => {
                         type: "REFRESH_HISTORY",
                         data: newLatest.slice(0, 2), // 直接传递数组
                     })
-                    .catch(() => {});
+                    .catch(() => { });
             }
         }
     });
