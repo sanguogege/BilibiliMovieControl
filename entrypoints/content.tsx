@@ -83,7 +83,7 @@ export default defineContentScript({
                                 display: "inline-flex",
                                 "align-items": "center",
                                 gap: "8px",
-                                padding: "2px 12px",
+                                padding: "2px 24px 2px 12px",
                                 background: "#fb7299",
                                 color: "white",
                                 "border-radius": "8px",

@@ -7,46 +7,18 @@ interface HistoryItemProps {
     isPinned?: boolean;
 }
 
-// CSS 类样式（通过 <style> 注入）
-const styles = `
-  .history-item {
-    padding: 6px 8px;
-    font-size: 11px;
-    background: #f6f7f8;
-    cursor: pointer;
-    border-radius: 4px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    border: 1px solid #eee;
-    color: #61666d;
-    margin-bottom: 4px;
-    transition: all 0.2s ease;
-  }
-  .history-item:hover {
-    background: #e8e9ec;
-    color: #333;
-  }
-  .history-item.pinned {
-    background: #fff0f3;
-    border: 1px solid #ffdce2;
-  }
-  .history-item.pinned:hover {
-    background: #ffe0e6;
-    color: #d14c6e;
-  }
-`;
+import s from "../assets/HistoryItem.module.css";
+
 
 export const HistoryItemComp: Component<HistoryItemProps> = (props) => {
-    const prefix = () => (props.isPinned ? '📌 ' : '🕒 ');
-    const classNames = () => `history-item ${props.isPinned ? 'pinned' : ''}`;
+  const prefix = () => (props.isPinned ? '📌 ' : '🕒 ');
 
-    return (
-        <>
-            <style>{styles}</style>
-            <div class={classNames()} onClick={() => props.onClick(props.item)}>
-                {prefix()}{props.item.title}
-            </div>
-        </>
-    );
+  return (
+    <div
+      class={`${s.item} ${props.isPinned ? s.pinned : ''}`}
+      onClick={() => props.onClick(props.item)}
+    >
+      {prefix()}{props.item.title}
+    </div>
+  );
 };

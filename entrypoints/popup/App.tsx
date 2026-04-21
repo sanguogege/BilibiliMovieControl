@@ -3,9 +3,9 @@ import { onMount, Show, For, createSignal, Switch } from "solid-js";
 import { useBiliConfig } from "@/hooks/useBiliConfig";
 import { TimeInput } from "@/components/TimeInput";
 import { HistoryList } from "@/components/HistoryList";
-import { TimeRangeManager } from "@/components/TimeRangeItem";
+import { TimeRangeManager } from "@/components/TimeRangeList";
 import { browser } from "wxt/browser";
-import { Settings, Clock } from "lucide-solid";
+import { Settings, Clock, Save, RotateCcw } from "lucide-solid";
 
 import { getSoftName } from "@/utils/bili";
 import StyledButton from "@/components/StyledButton";
@@ -190,8 +190,9 @@ export default function App() {
                 </Switch>
             </div>
 
-            <div style={{ display: "flex", gap: "6px" }}>
+            <div style={{ display: "flex", "justify-content": "space-between" }}>
                 <StyledButton
+                    style={{ padding: "8px 20px" }}
                     variant="primary"
                     loadingText="保存中..."
                     onClick={[applyConfig, "setting"]}
@@ -201,19 +202,21 @@ export default function App() {
                 </StyledButton>
 
                 <StyledButton
+                    style={{ padding: "8px 20px" }}
                     variant="reset"
                     loadingText="重置中..."
                     onClick={[applyConfig, "reset"]}
-                    icon={<Settings size={14} />}
+                    icon={<RotateCcw size={14} />}
                 >
                     重置
                 </StyledButton>
 
                 <StyledButton
+                    style={{ padding: "8px 20px" }}
                     variant="secondary"
                     loadingText="存档中..."
                     onClick={handleArchive}
-                    icon={<Settings size={14} />}
+                    icon={<Save size={14} />}
                 >
                     存档
                 </StyledButton>

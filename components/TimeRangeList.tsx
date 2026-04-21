@@ -1,6 +1,6 @@
 import { createSignal, For } from "solid-js";
 import { TimeInput } from "@/components/TimeInput";
-import { Trash2, Clock, Plus } from "lucide-solid";
+import { Trash2, Clock, Save, TimerReset, CopyX } from "lucide-solid";
 import type { TimeRange, TimeRangeManagerProps } from "@/assets/types"; // 从统一类型文件导入
 
 // TODO 保存到浏览器数据库，并通知页面更新（目前仅在内存中管理，刷新后会丢失）
@@ -59,6 +59,7 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
                 width: "100%",
                 left: 0,
                 top: 0,
+                height: "100%",
                 padding: "8px",
                 background: "#fff",
                 "border-radius": "8px",
@@ -68,13 +69,22 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
             }}
         >
             {/* 1. 顶部列表 */}
+            <div style={{
+                "text-align":"center",
+                "line-height": "36px",
+                "font-size": "18px",
+                "font-weight": "bold",
+                color: "#fb7299",
+            }}>
+                设置OP跳转时间段
+            </div>
             <div
                 style={{
-                    flex: 1,
                     display: "flex",
                     "flex-direction": "column",
                     padding: "8px",
                     background: "#f6f7f9",
+                    "margin-top": "18px",
                 }}
             >
                 <div
@@ -165,7 +175,7 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
             <div
                 style={{
                     padding: "12px",
-                    "margin-top": "6px",
+                    "margin-top": "18px",
                     background: "#fffafb",
                     display: "flex",
                     "flex-direction": "column",
@@ -222,28 +232,34 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
             <div
                 style={{
                     display: "flex",
-                    gap: "8px",
-                    "margin-top": "auto",
-                    "padding-top": "10px",
-                    "border-top": "1px solid #f1f2f3",
+                    flex: "1",
+                    "justify-content":"space-around",
+                    "margin-top": "18px",
+                    "padding": "16px 0",
                 }}
             >
                 <StyledButton
+                    style={{margin: "0 4px"}}
                     variant="primary"
                     loadingText="保存中..."
+                    icon={<Save size={14} />}
                     onClick={handleConfirm}
+                    fullWidth
                 >
                     保存
                 </StyledButton>
 
                 <StyledButton
+                    style={{ margin: "0 4px" }}
                     variant="reset"
                     loadingText="重置中..."
+                    icon={<TimerReset size={14} />}
                     onClick={handleResetInput}
+                    fullWidth
                 >
                     重置
                 </StyledButton>
-                <StyledButton variant="reset" onClick={() => props.onClose()}>
+                <StyledButton style={{ margin: "0 4px" }} variant="ghost" icon={<CopyX size={14} />} onClick={() => props.onClose()} fullWidth>
                     取消
                 </StyledButton>
             </div>
