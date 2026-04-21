@@ -29,3 +29,28 @@ export const getSoftName = () => browser.runtime.getManifest().name;
 
 
 export const getSoftVersion = () => browser.runtime.getManifest().version;
+
+
+export const getActiveTab = async () => {
+    try {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        return tabs[0] || null;
+    } catch {
+        return null;
+    }
+};
+
+export const sendToActiveTab = async (message: any) => {
+    const tab = await getActiveTab();
+    // 只有 B站视频页才发送消息
+    if (tab?.id && tab.url?.includes("bilibili.com/video")) {
+        try {
+            return await browser.tabs.sendMessage(tab.id, message);
+        } catch (e) {
+            // 捕获“接收端不存在”的错误，避免控制台炸出红色报错
+            console.warn("[Extension] 消息发送失败，可能是页面未就绪:", e);
+            return null;
+        }
+    }
+    return null;
+};

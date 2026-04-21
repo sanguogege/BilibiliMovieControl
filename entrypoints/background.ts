@@ -28,10 +28,12 @@ export default defineBackground(() => {
      * 核心：处理手动存档 (Pinned)
      */
     const handleArchiveLogic = async (activeTab: any, config: any) => {
+        const cleanedUrl = cleanBiliUrl(activeTab.url || "");
+
         const currentData: HistoryItem = {
             id: activeTab?.id || Date.now(),
             title: activeTab.title || "未知标题",
-            url: activeTab.url || "",
+            url: cleanedUrl, // 使用清洗后的 URL
             time: Date.now(),
             mode: config.mode,
             opRanges: config.opRanges,
@@ -41,7 +43,13 @@ export default defineBackground(() => {
 
         const res = await browser.storage.local.get("pinnedHistory");
         const history = (res.pinnedHistory as HistoryItem[]) || [];
-        const newHistory = [currentData, ...history].slice(
+
+        // --- 2. 唯一性去重 ---
+        const filteredHistory = history.filter(
+            (item: HistoryItem) => cleanBiliUrl(item.url) !== cleanedUrl
+        );
+
+        const newHistory = [currentData, ...filteredHistory].slice(
             0,
             MAX_HISTORY_LENGTH,
         );

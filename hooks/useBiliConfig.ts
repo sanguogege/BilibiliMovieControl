@@ -2,6 +2,8 @@ import { createSignal } from "solid-js";
 import { browser } from "wxt/browser";
 import { TimePoint, TimeRange, HistoryItem } from "@/assets/types";
 
+import { sendToActiveTab } from "@/utils/bili";
+
 export const useBiliConfig = () => {
     // --- 1. 跳过列表 (用于 TimeRangeManager 弹窗) ---
     const [opRanges, setOpRanges] = createSignal<TimeRange[]>([]);
@@ -39,21 +41,11 @@ export const useBiliConfig = () => {
             "pinnedHistory",
         ]);
 
-        const tabs = await browser.tabs.query({
-            active: true,
-            currentWindow: true,
-        });
-        const activeTab = tabs[0];
-        if (activeTab?.id && activeTab.url?.includes("bilibili.com/video")) {
-            try {
-                const resp = await browser.tabs.sendMessage(activeTab.id, {
-                    type: "QUERY_READY_STATUS",
-                });
-                if (resp) setIsPageReady(resp.isCollection);
-            } catch (e) {
-                setIsPageReady(false);
-            }
-        }
+
+        const resp = await sendToActiveTab({ type: "QUERY_READY_STATUS" });
+
+        // 只要 resp 是 null（非 B站页面或报错），setIsPageReady 就会被设为 false
+        setIsPageReady(!!resp?.isCollection);
 
         if (res.opRanges) setOpRanges(res.opRanges as TimeRange[]);
         if (res.frameConfig) setFrameConfig(res.frameConfig as TimePoint);
@@ -72,16 +64,10 @@ export const useBiliConfig = () => {
     const saveMode = async (newMode: "frame" | "manual") => {
         setMode(newMode);
         await browser.storage.local.set({ mode: newMode });
-        const tabs = await browser.tabs.query({
-            active: true,
-            currentWindow: true,
+        await sendToActiveTab({
+            type: "SET_MODE",
+            mode: newMode,
         });
-        if (tabs[0]?.id) {
-            await browser.tabs.sendMessage(tabs[0].id, {
-                type: "SET_MODE",
-                mode: newMode,
-            });
-        }
     };
 
     /**
@@ -107,22 +93,10 @@ export const useBiliConfig = () => {
         // 1. 持久化
         await browser.storage.local.set(configData);
 
-        // 2. 实时同步给当前 B站标签页
-        const tabs = await browser.tabs.query({
-            active: true,
-            currentWindow: true,
+        await sendToActiveTab({
+            type: "UPDATE_CONFIG",
+            data: configData,
         });
-        const activeTab = tabs[0];
-        if (activeTab?.id && activeTab.url?.includes("bilibili.com/video")) {
-            try {
-                await browser.tabs.sendMessage(activeTab.id, {
-                    type: "UPDATE_CONFIG",
-                    data: configData,
-                });
-            } catch (e) {
-                console.warn("Content Script 未就绪，配置仅保存至本地。");
-            }
-        }
     };
 
     /**
@@ -147,10 +121,18 @@ export const useBiliConfig = () => {
                 },
             },
         });
-
+        
         if (response?.pinnedHistory) {
             setPinnedHistory(response.pinnedHistory);
         }
+    };
+
+    /**
+     * TimeRangeManager 更新回调：更新 opRanges 并立即应用配置
+     */
+    const handleUpdateOpRanges = async (newRanges: TimeRange[]) => {
+        setOpRanges(newRanges);
+        await browser.storage.local.set({ opRanges: newRanges });
     };
 
     /**
@@ -193,5 +175,6 @@ export const useBiliConfig = () => {
         handleArchive,
         loadHistory,
         openOptions,
+        handleUpdateOpRanges
     };
 };

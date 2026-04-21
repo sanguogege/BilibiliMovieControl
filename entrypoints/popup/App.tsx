@@ -16,13 +16,11 @@ import StyledButton from "@/components/StyledButton";
 export default function App() {
     const {
         opRanges,
-        setOpRanges,
         frameConfig,
         setFrameConfig,
         jumpConfig,
         setJumpConfig,
         mode,
-        setMode,
         isPageReady,
         setIsPageReady,
         latestHistory,
@@ -36,6 +34,7 @@ export default function App() {
         handleArchive,
         loadHistory,
         openOptions,
+        handleUpdateOpRanges
     } = useBiliConfig();
 
     const [showTimeManager, setShowTimeManager] = createSignal(false);
@@ -140,7 +139,7 @@ export default function App() {
             <Show when={showTimeManager()}>
                 <TimeRangeManager
                     ranges={opRanges()}
-                    onUpdate={setOpRanges}
+                    onUpdate={handleUpdateOpRanges}
                     onClose={() => setShowTimeManager(false)}
                 />
             </Show>
