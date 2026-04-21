@@ -187,12 +187,10 @@ export default defineContentScript({
 
         // 监听消息更新
         const handleMessage = (msg: any, sender: any, sendResponse: any) => {
-            if (
-                msg.type === "UPDATE_VIDEO_CONFIG" ||
-                msg.type === "UPDATE_CONFIG"
-            ) {
+            if (msg.type === "UPDATE_CONFIG") {
                 updateConfig(msg.data);
             }
+            if (msg.type === "SET_MODE") setMode(msg.mode);
             if (msg.type === "QUERY_READY_STATUS") {
                 sendResponse({ isCollection: isCollectionPage() });
             }
