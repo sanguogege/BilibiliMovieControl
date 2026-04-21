@@ -11,6 +11,8 @@ import {
 } from "../utils/frameAnalyzer";
 import { TimeRange, TimePoint } from "@/assets/types";
 
+// TODO 1. 将ui 移至components，content只负责逻辑和状态管理
+
 export default defineContentScript({
     matches: ["*://*.bilibili.com/video/*"],
     cssInjectionMode: "manual",

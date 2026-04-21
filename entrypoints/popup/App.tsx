@@ -7,10 +7,11 @@ import { TimeRangeManager } from "@/components/TimeRangeItem";
 import { browser } from "wxt/browser";
 import { Settings, Clock } from "lucide-solid";
 
-// TODO 3. 去除设置页的不必要页面。
-
 import { getSoftName } from "@/utils/bili";
 import StyledButton from "@/components/StyledButton";
+
+// TODO 全局配置修改为，可以添加多个网页地址，让插件生效。目前只针对B站。
+
 
 export default function App() {
     const {
