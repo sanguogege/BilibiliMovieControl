@@ -51,7 +51,7 @@ export default function AboutPage() {
                     <div style={{ flex: 1 }}>
                         <h3 style={cardTitleStyle}>模式选择</h3>
                         <p style={cardTextStyle}>
-                            <strong>自动模式：</strong> 采用后台像素级分析，检测视频末尾黑屏即跳。无需手动干预，默认在最后 15% 阶段开启。
+                            <strong>智能帧分析：</strong> 采用后台像素级分析，检测视频末尾黑屏即跳。用户设置起始点即可。
                         </p>
                         <p style={{ ...cardTextStyle, "margin-top": "10px" }}>
                             <strong>手动模式：</strong> 自定义切集时间点，精准控制每一秒。
@@ -65,7 +65,8 @@ export default function AboutPage() {
                     <div style={{ flex: 1 }}>
                         <h3 style={cardTitleStyle}>OP / 先导跳过</h3>
                         <p style={cardTextStyle}>
-                            针对片头较长的合集，可设置跳过区间。一旦进入预设范围，插件将瞬间跨越到正片起始位置。
+                            针对片头较长的合集，可设置跳过区间。一旦进入预设范围，插件将瞬间跨越到正片起始位置。<br/>
+                            可设置多个跳过区间，满足不同合集的需求。
                         </p>
                     </div>
                 </section>
@@ -89,27 +90,6 @@ export default function AboutPage() {
                         <p style={cardTextStyle}>
                             支持最多 20 条长期手动配置，可一键锁定你最喜爱的合集参数。点击存档即可快速同步时间点。
                         </p>
-                    </div>
-                </section>
-
-                {/* 5. 性能与调节 (跨两列显示或普通显示) */}
-                <section style={{ ...cardStyle, "grid-column": "span 2" }}>
-                    <div style={iconBoxStyle}><Settings2 color="#fb7299" /></div>
-                    <div style={{ flex: 1 }}>
-                        <h3 style={cardTitleStyle}>进阶设置</h3>
-                        <div style={{ display: "flex", gap: "40px" }}>
-                            <div style={{ flex: 1 }}>
-                                <p style={cardTextStyle}>
-                                    <strong>读帧起始进度：</strong> <br />
-                                    1、可调节分析起始点。设置 90% 以上可显著降低 CPU 占用；针对有超长后记的合集，建议调低数值。<br/>
-                                    2、设置精准时间点，如 00:01:30，插件将从该时间点开始分析，以防百分比模式误差过大。
-                                </p>
-                               
-                            </div>
-                            <div style={tagBoxStyle}>
-                                <span style={tagStyle}><Cpu size={12} /> 动态 CPU 优化技术已启用</span>
-                            </div>
-                        </div>
                     </div>
                 </section>
             </div>
