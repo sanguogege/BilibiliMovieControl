@@ -1,13 +1,13 @@
 // entrypoints/popup/App.tsx
-import { onMount, Show, For, createSignal, Switch, Match } from "solid-js";
+import {  Show, For, createSignal, Switch, Match } from "solid-js";
 import { TimeInput } from "@/components/TimeInput";
 import { HistoryList } from "@/components/HistoryList";
 import { TimeRangeManager } from "@/components/TimeRangeList";
 import { browser } from "wxt/browser";
-import { Settings, Clock, Save, RotateCcw } from "lucide-solid";
+// import { Settings, Clock, Save, RotateCcw } from "lucide-solid";
 
 import { getSoftName, LATEST_HISTORY_LENGTH, PINNED_HISTORY_LENGTH } from "@/utils/bilibili";
-import { HistoryConfig } from "@/types/types";
+import type { HistoryConfig } from "@/types/types";
 import { useStorageConfig } from "@/hooks/useStorageConfig";
 
 
@@ -82,19 +82,19 @@ export default function App() {
         browser.tabs.create({ url: browser.runtime.getURL("/options.html") });
     };
 
-    onMount(async () => {
-        await initFromStorage();
+    // onMount(async () => {
+    //     await initFromStorage();
 
-        const res = await browser.storage.local.get([
-            "latestHistory",
-            "pinnedHistory",
-        ]);
+    //     const res = await browser.storage.local.get([
+    //         "latestHistory",
+    //         "pinnedHistory",
+    //     ]);
 
-        if (Array.isArray(res.latestHistory))
-            setLatestHistory(res.latestHistory.slice(0, 2) as HistoryConfig[]);
-        if (Array.isArray(res.pinnedHistory))
-            setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryConfig[]);
-    });
+    //     if (Array.isArray(res.latestHistory))
+    //         setLatestHistory(res.latestHistory.slice(0, 2) as HistoryConfig[]);
+    //     if (Array.isArray(res.pinnedHistory))
+    //         setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryConfig[]);
+    // });
 
     return (
         <div class="card bg-base-100 shadow-xl rounded-box p-4 w-72 gap-3">
@@ -117,7 +117,6 @@ export default function App() {
                         class=" btn btn-outline btn-primary btn-xs"
                         onClick={openOptions}
                     >
-                        <Settings size={12} />
                         查看
                     </button>
                 </div>
@@ -128,7 +127,7 @@ export default function App() {
                     onClick={[setShowTimeManager, true]}
                 >
                     {" "}
-                    <Clock size={14} />
+                    
                     管理多个跳过时间段
                 </button>
 
@@ -229,7 +228,7 @@ export default function App() {
                     class="btn btn-warning btn-sm w-full"
                     onClick={applyConfig}
                 >
-                    <RotateCcw size={14} /> 重置
+                     重置
                 </button>
                     
                 <HistoryList
@@ -241,7 +240,7 @@ export default function App() {
                     class="btn btn-primary btn-sm w-full"
                     onClick={handleArchive}
                 >
-                    <Save size={14} /> 手动存档
+                     手动存档
                 </button>
                 <HistoryList
                     items={pinnedHistory()}

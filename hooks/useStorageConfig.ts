@@ -1,8 +1,7 @@
-import { createSignal , } from "solid-js";
+import {  createStore } from "solid-js";
 import { browser } from "wxt/browser";
 
-import { createStore } from "solid-js/store";
-import { BiliVideoConfig } from "@/types/types";
+import type { BiliVideoConfig } from "@/types/types";
 
 
 const INITIAL_CONFIG: BiliVideoConfig = {
@@ -24,11 +23,11 @@ export const useStorageConfig = () => {
 
      const initFromStorage = async () => {
          const res = await browser.storage.local.get(STORAGE_KEYS);
-         setConfig(res); // 直接合并
+         setConfig(res as any); // 直接合并
      };
 
       const updateConfig = async (data: Partial<BiliVideoConfig>) => {
-          setConfig(data);
+          setConfig(data as any);
           await browser.storage.local.set(data);
       };
 

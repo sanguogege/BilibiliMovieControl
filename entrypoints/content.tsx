@@ -1,5 +1,5 @@
 // content/index.ts
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { createSignal } from "solid-js";
 import { browser } from "wxt/browser";
 import {
@@ -16,7 +16,7 @@ import {
     TARGET_ID,
     BTN_CLASS,
 } from "@/utils/bilibili";
-import { BiliVideoConfig } from "@/types/types";
+import type { BiliVideoConfig } from "@/types/types";
 import { STORAGE_KEYS } from "@/hooks/useStorageConfig";
 import { VideoUI } from "@/components/VideoUI";
 
@@ -33,7 +33,7 @@ export default defineContentScript({
 
         const storageListener = createStorageListener(
             STORAGE_KEYS,
-            (data: Partial<BiliVideoConfig>) => setConfig(data),
+            (data: Partial<BiliVideoConfig>) => setConfig(data as any),
         );
         browser.storage.onChanged.addListener(storageListener);
 

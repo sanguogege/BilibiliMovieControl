@@ -1,10 +1,10 @@
 import "wxt";
 import { addImportPreset, addViteConfig, defineWxtModule } from "wxt/modules";
-import solid, { type Options as PluginOptions } from "vite-plugin-solid";
+import solid, { type Options as PluginOptions } from "@solidjs/vite-plugin";
 
 export default defineWxtModule<SolidModuleOptions>({
-    name: "@wxt-dev/module-solid",
-    configKey: "solid",
+    name: "solid-v2",
+    configKey: "solid-v2",
     setup(wxt, options) {
         const { vite } = options ?? {};
 
