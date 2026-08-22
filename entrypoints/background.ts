@@ -1,6 +1,6 @@
 import { browser } from "wxt/browser";
 import { getCollectionTitle } from "@/utils/bilibili";
-import { HistoryConfig, TimePoint, TimeRange } from "@/types/types";
+import type { HistoryConfig, TimePoint, TimeRange } from "@/types/types";
 
 import { MAX_HISTORY_LENGTH } from "@/utils/bilibili";
 

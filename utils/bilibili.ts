@@ -1,4 +1,4 @@
-import { TimePoint } from "@/types/types";
+import type { TimePoint } from "@/types/types";
 import { browser } from "wxt/browser";
 
 export const MAX_HISTORY_LENGTH = 20;

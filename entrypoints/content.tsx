@@ -16,7 +16,7 @@ import {
     TARGET_ID,
     BTN_CLASS,
 } from "@/utils/bilibili";
-import { BiliVideoConfig } from "@/types/types";
+import type { BiliVideoConfig } from "@/types/types";
 import { STORAGE_KEYS } from "@/hooks/useStorageConfig";
 import { VideoUI } from "@/components/VideoUI";
 

@@ -2,7 +2,7 @@ import { createSignal , } from "solid-js";
 import { browser } from "wxt/browser";
 
 import { createStore } from "solid-js/store";
-import { BiliVideoConfig } from "@/types/types";
+import type { BiliVideoConfig } from "@/types/types";
 
 
 const INITIAL_CONFIG: BiliVideoConfig = {
