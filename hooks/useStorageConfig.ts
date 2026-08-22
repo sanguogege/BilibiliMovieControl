@@ -1,4 +1,4 @@
-import {  createStore } from "solid-js";
+import { createStore } from "solid-js";
 import { browser } from "wxt/browser";
 
 import type { BiliVideoConfig } from "@/types/types";

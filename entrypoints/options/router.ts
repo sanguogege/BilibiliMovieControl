@@ -1,4 +1,6 @@
 // entrypoints/options/router.ts
+import { createRouter } from '@solidjs/router';
+import { fileRoutes } from '@solidjs/router/fs';
 import { lazy } from 'solid-js';
 
 export const routes: any = [
@@ -24,3 +26,7 @@ export const routes: any = [
         component: lazy(() => import("./pages/About.tsx"!)),
     },
 ];
+
+export const Router = createRouter({ routes: fileRoutes(routes) });
+
+
