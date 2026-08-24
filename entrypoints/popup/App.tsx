@@ -82,18 +82,21 @@ export default function App() {
         browser.tabs.create({ url: browser.runtime.getURL("/options.html") });
     };
 
-    onSettled(()=> async () => {
-        await initFromStorage();
+    onSettled(()=> {
 
-        const res = await browser.storage.local.get([
-            "latestHistory",
-            "pinnedHistory",
-        ]);
 
-        if (Array.isArray(res.latestHistory))
-            setLatestHistory(res.latestHistory.slice(0, 2) as HistoryConfig[]);
-        if (Array.isArray(res.pinnedHistory))
-            setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryConfig[]);
+
+        (async () => {
+            await initFromStorage();
+            const res = await browser.storage.local.get([
+                "latestHistory",
+                "pinnedHistory",
+            ]);
+            if (Array.isArray(res.latestHistory))
+                setLatestHistory(res.latestHistory.slice(0, 2) as HistoryConfig[]);
+            if (Array.isArray(res.pinnedHistory))
+                setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryConfig[]);
+        })()
     });
 
     return (

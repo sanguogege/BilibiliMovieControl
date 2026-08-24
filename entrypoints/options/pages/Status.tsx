@@ -1,18 +1,21 @@
-import { createSignal, onSettled } from "solid-js";
+import { createSignal, flush, onSettled } from "solid-js";
 // import { Info, LayoutDashboard } from "lucide-solid";
 import { browser } from "wxt/browser";
 
 export default function Home() {
     const [status, setStatus] = createSignal<boolean>(true);
 
-    onSettled(() => async () => {
-        const res = await browser.storage.local.get({ isAutoHandle: true });
-        setStatus(res.isAutoHandle as boolean);
+    onSettled(() => {
+        (async () => {
+            const res = await browser.storage.local.get({ isAutoHandle: true });
+            setStatus(res.isAutoHandle as boolean);
+        })()
     });
 
     const updateStatus = async () => {
-        setStatus(!status());
-        await browser.storage.local.set({ isAutoHandle: status() });
+        const newStatus = !status();
+        setStatus(newStatus);
+        await browser.storage.local.set({ isAutoHandle: newStatus });
     };
 
     return (
@@ -36,26 +39,23 @@ export default function Home() {
                     <h2 class="card-title text-base font-bold text-base-content flex items-center gap-2">
                         {/* <LayoutDashboard /> */}
                         <span
-                            class={`${
-                                status() ? "text-success" : "text-error"
-                            }`}
+                            class={`${status() ? "text-success" : "text-error"
+                                }`}
                         >
                             合集处理状态：{status() ? "启动中" : "关闭"}
                         </span>
                     </h2>
                     <div class="flex items-center">
                         <div
-                            class={`aura  ${
-                                status()
+                            class={`aura  ${status()
                                     ? "aura-rainbow duration-1000"
                                     : "text-orange-600"
-                            }`}
+                                }`}
                         >
                             <button
                                 onClick={updateStatus}
-                                class={`btn btn-soft ${
-                                    status() ? "btn-success" : "btn-error"
-                                }`}
+                                class={`btn btn-soft ${status() ? "btn-success" : "btn-error"
+                                    }`}
                             >
                                 {status() ? "启动中" : "关闭"}
                             </button>

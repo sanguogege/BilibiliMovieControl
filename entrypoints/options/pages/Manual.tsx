@@ -12,9 +12,11 @@ export default function HistoryPage() {
     const [pinnedHistory, setPinnedHistory] = createSignal<HistoryConfig[]>([]);
 
     // 初始化加载
-    onSettled(() => async () => {
-        const res = await browser.storage.local.get({ pinnedHistory: [] });
-        setPinnedHistory(res.pinnedHistory as HistoryConfig[]);
+    onSettled(() => {
+        (async () => {
+            const res = await browser.storage.local.get({ pinnedHistory: [] });
+            setPinnedHistory(res.pinnedHistory as HistoryConfig[]);
+        })()
     });
 
     // 删除单条

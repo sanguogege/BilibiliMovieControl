@@ -12,9 +12,13 @@ export default function HistoryPage() {
 
     // 初始化加载
     onSettled(() => async () => {
-        const res = await browser.storage.local.get({ latestHistory: [] });
-        setHistoryList(res.latestHistory as HistoryConfig[]);
+        (async () => {
+            const res = await browser.storage.local.get({ latestHistory: [] });
+            setHistoryList(res.latestHistory as HistoryConfig[]);
+        })()
     });
+
+    
 
     // 删除单条
     const deleteItem = async (url: string) => {

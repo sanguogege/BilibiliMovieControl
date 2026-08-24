@@ -33,7 +33,8 @@ export default defineContentScript({
 
         const storageListener = createStorageListener(
             STORAGE_KEYS,
-            (data: Partial<BiliVideoConfig>) => setConfig(data as any),
+            (data: Partial<BiliVideoConfig>) =>
+                setConfig((prev) => ({ ...prev, ...data }) as BiliVideoConfig),
         );
         browser.storage.onChanged.addListener(storageListener);
 

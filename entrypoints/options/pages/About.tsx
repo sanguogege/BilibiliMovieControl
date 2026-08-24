@@ -22,7 +22,7 @@ export default function AboutPage() {
             <div class="grid">
                 <section class="bg-base-100 p-6 my-2 rounded-2xl border border-base-300 shadow-sm">
                     <p class="m-0 text-sm text-base-content/70 leading-relaxed mt-2.5">
-                        <strong>框架：</strong> WTX + SolidJS + TailwindCSS + DaisyUI
+                        <strong>框架：</strong> WTX + SolidJS rc 2.0 + TailwindCSS + DaisyUI
                     </p>
                 </section>
                 <section class="bg-base-100 p-6 my-2 rounded-2xl border border-base-300 shadow-sm">

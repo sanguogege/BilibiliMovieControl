@@ -23,11 +23,13 @@ export const useStorageConfig = () => {
 
      const initFromStorage = async () => {
          const res = await browser.storage.local.get(STORAGE_KEYS);
-         setConfig(res as any); // 直接合并
+        // 合并到现有 store，使用函数式写法以兼容 Solid 2 的 storeSetter
+        setConfig((prev) => ({ ...prev, ...(res as Partial<BiliVideoConfig>) } as BiliVideoConfig));
      };
-
+ 
       const updateConfig = async (data: Partial<BiliVideoConfig>) => {
-          setConfig(data as any);
+          // 合并更新
+          setConfig((prev) => ({ ...prev, ...(data as Partial<BiliVideoConfig>) } as BiliVideoConfig));
           await browser.storage.local.set(data);
       };
 

@@ -1,18 +1,32 @@
 import { onSettled, type ParentProps } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { useLocation, useNavigate } from '@solidjs/router';
 // import { Settings, History, Info, HandGrab } from 'lucide-solid';
 import { OptionsFooter } from '@/components/OptionsFooter';
 
 
 import { getSoftName } from '@/utils/bilibili';
 
+const NAV_LINKS = [
+    { to: "/", label: "功能讲解" },
+    { to: "/status", label: "状态设置" },
+    { to: "/history", label: "自动存档" },
+    { to: "/manual", label: "手动存档" },
+    { to: "/about", label: "插件说明" },
+];
+
 export default function Layout(props: ParentProps) {
   const navigate = useNavigate();
+  const loc = useLocation();
 
+  // 支持从扩展其他地方打开指定页：options.html?target=status
+  // 只处理一次，避免 onSettled 在每次导航后重复跳转
+  let handledTarget = false;
   onSettled(() => {
-    const urlParams = new URLSearchParams(location.search);
+    if (handledTarget) return;
+    const urlParams = new URLSearchParams(window.location.search);
     const target = urlParams.get('target');
     if (target) {
+      handledTarget = true;
       navigate(`/${target}`, { replace: true });
     }
   });
@@ -24,21 +38,18 @@ export default function Layout(props: ParentProps) {
         <div>
           <h2 class="text-primary text-lg mb-5 font-bold">{getSoftName()}设置</h2>
 
-          <a href="/"   class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-             功能讲解
-          </a>
-          <a href="/status"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-            状态设置
-          </a>
-          <a href="/history"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-             自动存档
-          </a>
-          <a href="/manual"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-             手动存档
-          </a>
-          <a href="/about"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-             插件说明
-          </a>
+          {NAV_LINKS.map((link) => (
+            <a
+              href={link.to}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(link.to);
+              }}
+              class={`flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5${loc.pathname === link.to ? " active-link" : ""}`}
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
       </nav>
 
