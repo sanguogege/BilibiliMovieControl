@@ -1,6 +1,6 @@
 import { onSettled, type ParentProps } from 'solid-js';
 import { useLocation, useNavigate } from '@solidjs/router';
-// import { Settings, History, Info, HandGrab } from 'lucide-solid';
+// import { Settings, RotateCcwClock, Info, HandGrab } from 'lucide-solid';
 import { OptionsFooter } from '@/components/OptionsFooter';
 
 
