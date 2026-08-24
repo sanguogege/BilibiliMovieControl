@@ -1,5 +1,5 @@
 // entrypoints/options/pages/History.tsx
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, For, onSettled, Show } from 'solid-js';
 // import { Trash2, ExternalLink, History as HistoryIcon, Info } from 'lucide-solid';
 import { browser } from 'wxt/browser';
 
@@ -11,10 +11,10 @@ export default function HistoryPage() {
     const [historyList, setHistoryList] = createSignal<HistoryConfig[]>([]);
 
     // 初始化加载
-    // onMount(async () => {
-    //     const res = await browser.storage.local.get({ latestHistory: [] });
-    //     setHistoryList(res.latestHistory as HistoryConfig[]);
-    // });
+    onSettled(() => async () => {
+        const res = await browser.storage.local.get({ latestHistory: [] });
+        setHistoryList(res.latestHistory as HistoryConfig[]);
+    });
 
     // 删除单条
     const deleteItem = async (url: string) => {

@@ -6,7 +6,10 @@ export default defineWxtModule<SolidModuleOptions>({
     name: "solid-v2",
     configKey: "solid-v2",
     setup(wxt, options) {
-        const { vite } = options ?? {};
+
+        console.log("options",options);
+
+        const { vite } = options ?? { start: true };
 
         addViteConfig(wxt, () => ({
             plugins: [solid(vite)],

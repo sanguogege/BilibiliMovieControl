@@ -1,14 +1,14 @@
-import { createSignal } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 // import { Info, LayoutDashboard } from "lucide-solid";
 import { browser } from "wxt/browser";
 
 export default function Home() {
     const [status, setStatus] = createSignal<boolean>(true);
 
-    // onMount(async () => {
-    //     const res = await browser.storage.local.get({ isAutoHandle: true });
-    //     setStatus(res.isAutoHandle as boolean);
-    // });
+    onSettled(() => async () => {
+        const res = await browser.storage.local.get({ isAutoHandle: true });
+        setStatus(res.isAutoHandle as boolean);
+    });
 
     const updateStatus = async () => {
         setStatus(!status());

@@ -1,5 +1,5 @@
 // entrypoints/popup/App.tsx
-import {  Show, For, createSignal, Switch, Match } from "solid-js";
+import {  Show, For, createSignal, Switch, Match, onSettled } from "solid-js";
 import { TimeInput } from "@/components/TimeInput";
 import { HistoryList } from "@/components/HistoryList";
 import { TimeRangeManager } from "@/components/TimeRangeList";
@@ -82,19 +82,19 @@ export default function App() {
         browser.tabs.create({ url: browser.runtime.getURL("/options.html") });
     };
 
-    // onMount(async () => {
-    //     await initFromStorage();
+    onSettled(()=> async () => {
+        await initFromStorage();
 
-    //     const res = await browser.storage.local.get([
-    //         "latestHistory",
-    //         "pinnedHistory",
-    //     ]);
+        const res = await browser.storage.local.get([
+            "latestHistory",
+            "pinnedHistory",
+        ]);
 
-    //     if (Array.isArray(res.latestHistory))
-    //         setLatestHistory(res.latestHistory.slice(0, 2) as HistoryConfig[]);
-    //     if (Array.isArray(res.pinnedHistory))
-    //         setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryConfig[]);
-    // });
+        if (Array.isArray(res.latestHistory))
+            setLatestHistory(res.latestHistory.slice(0, 2) as HistoryConfig[]);
+        if (Array.isArray(res.pinnedHistory))
+            setPinnedHistory(res.pinnedHistory.slice(0, 3) as HistoryConfig[]);
+    });
 
     return (
         <div class="card bg-base-100 shadow-xl rounded-box p-4 w-72 gap-3">

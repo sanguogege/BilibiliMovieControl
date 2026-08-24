@@ -1,4 +1,4 @@
-import type { ParentProps } from 'solid-js';
+import { onSettled, type ParentProps } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 // import { Settings, History, Info, HandGrab } from 'lucide-solid';
 import { OptionsFooter } from '@/components/OptionsFooter';
@@ -9,13 +9,13 @@ import { getSoftName } from '@/utils/bilibili';
 export default function Layout(props: ParentProps) {
   const navigate = useNavigate();
 
-  onMount(() => {
+  onSettled(() => {
     const urlParams = new URLSearchParams(location.search);
     const target = urlParams.get('target');
     if (target) {
       navigate(`/${target}`, { replace: true });
     }
-  })
+  });
 
   return (
     <div class="flex h-screen overflow-hidden bg-base-200">

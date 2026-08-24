@@ -24,17 +24,18 @@
         "submit:edge": "wxt submit --edge-zip .output/*edge*.zip"
     },
     "dependencies": {
-        "@tailwindcss/vite": "^4.3.3",
-        "tailwindcss": "^4.3.3",
-        "daisyui": "^5.7.18",
         "@solidjs/router": "^2.0.0-next.16",
+        "@solidjs/web": "^2.0.0-rc.0",
+        "@tailwindcss/vite": "^4.3.3",
+        "daisyui": "^5.7.18",
         "solid-js": "2.0.0-rc.0",
-        "@solidjs/web": "^2.0.0-rc.0"
+        "tailwindcss": "^4.3.3"
     },
     "devDependencies": {
-        "@solidjs/vite-plugin": "^3.0.0-next.29",
         "@changesets/cli": "^2.31.1",
+        "@solidjs/vite-plugin": "^3.0.0-next.29",
         "typescript": "^5.9.3",
+        "web-ext": "10.6.0",
         "wxt": "^0.21.4"
     }
 }
