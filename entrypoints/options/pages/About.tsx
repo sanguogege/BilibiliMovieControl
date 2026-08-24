@@ -1,6 +1,6 @@
-import {
-    CirclePlay
-} from 'lucide-solid';
+// import {
+//     CirclePlay
+// } from 'lucide-solid';
 import { getSoftName } from '@/utils/bilibili';
 
 
@@ -10,7 +10,8 @@ export default function AboutPage() {
             {/* 头部标题 */}
             <header class="max-w-4xl mb-10">
                 <h1 class="text-3xl   mb-3 text-primary flex items-center gap-3">
-                    <CirclePlay size={36} /> {getSoftName()}
+                    {/* <CirclePlay size={36} /> */}
+                     {getSoftName()}
                 </h1>
                 <p class="text-base-content/70 text-base leading-relaxed">
                     专为 Bilibili 合集视频打造的连播助手。通过像素级帧分析与灵活的存档机制，让你的追剧体验真正实现“无人值守”。

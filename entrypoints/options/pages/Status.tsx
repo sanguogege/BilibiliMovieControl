@@ -1,14 +1,14 @@
-import { createSignal, onMount } from "solid-js";
-import { Info, LayoutDashboard } from "lucide-solid";
+import { createSignal } from "solid-js";
+// import { Info, LayoutDashboard } from "lucide-solid";
 import { browser } from "wxt/browser";
 
 export default function Home() {
     const [status, setStatus] = createSignal<boolean>(true);
 
-    onMount(async () => {
-        const res = await browser.storage.local.get({ isAutoHandle: true });
-        setStatus(res.isAutoHandle as boolean);
-    });
+    // onMount(async () => {
+    //     const res = await browser.storage.local.get({ isAutoHandle: true });
+    //     setStatus(res.isAutoHandle as boolean);
+    // });
 
     const updateStatus = async () => {
         setStatus(!status());
@@ -21,7 +21,8 @@ export default function Home() {
             <header class="flex justify-between items-center mb-10">
                 <div>
                     <h1 class="text-3xl mb-3 text-primary flex items-center gap-3">
-                        <Info size={36} /> 状态设置
+                        {/* <Info size={36} />  */}
+                        状态设置
                     </h1>
                     <p class="text-base-content/70 text-base leading-relaxed">
                         设置此插件是自动运行，还是关闭。
@@ -33,7 +34,7 @@ export default function Home() {
             <div class="card bg-base-100 shadow-sm border border-base-300 mb-8">
                 <div class="card-body gap-3 p-6">
                     <h2 class="card-title text-base font-bold text-base-content flex items-center gap-2">
-                        <LayoutDashboard />
+                        {/* <LayoutDashboard /> */}
                         <span
                             class={`${
                                 status() ? "text-success" : "text-error"

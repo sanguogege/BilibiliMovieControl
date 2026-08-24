@@ -1,6 +1,6 @@
-import { ParentProps } from 'solid-js';
-import { A ,useNavigate } from '@solidjs/router';
-import { Settings, History, Info, HandGrab } from 'lucide-solid';
+import type { ParentProps } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+// import { Settings, History, Info, HandGrab } from 'lucide-solid';
 import { OptionsFooter } from '@/components/OptionsFooter';
 
 
@@ -24,21 +24,21 @@ export default function Layout(props: ParentProps) {
         <div>
           <h2 class="text-primary text-lg mb-5 font-bold">{getSoftName()}设置</h2>
 
-          <A href="/" end activeClass="active-link" class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-            <Settings size={18} /> 功能讲解
-          </A>
-          <A href="/status" activeClass="active-link" class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-            <History size={18} /> 状态设置
-          </A>
-          <A href="/history" activeClass="active-link" class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-            <History size={18} /> 自动存档
-          </A>
-          <A href="/manual" activeClass="active-link" class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-            <HandGrab size={18} /> 手动存档
-          </A>
-          <A href="/about" activeClass="active-link" class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
-            <Info size={18} /> 插件说明
-          </A>
+          <a href="/"   class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
+             功能讲解
+          </a>
+          <a href="/status"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
+            状态设置
+          </a>
+          <a href="/history"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
+             自动存档
+          </a>
+          <a href="/manual"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
+             手动存档
+          </a>
+          <a href="/about"  class="flex items-center gap-2.5 px-3 py-3 no-underline text-base-content/70 rounded-lg transition-all duration-200 hover:bg-primary/5">
+             插件说明
+          </a>
         </div>
       </nav>
 

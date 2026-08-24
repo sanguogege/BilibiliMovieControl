@@ -1,6 +1,6 @@
 import { createSignal, For } from "solid-js";
 import { TimeInput } from "@/components/TimeInput";
-import { Trash2, Clock, Save, TimerReset, CopyX } from "lucide-solid";
+// import { Trash2, Clock, Save, TimerReset, CopyX } from "lucide-solid";
 import type { TimeRange, TimeRangeManagerProps } from "@/types/types";
 import { formatTime } from "@/utils/bilibili"
 
@@ -87,7 +87,7 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
                                     }}
                                     class="btn btn-ghost btn-xs text-base-content/50"
                                 >
-                                    <Trash2 size={14} />
+                                    {/* <Trash2 size={14} /> */}
                                 </button>
                             </div>
                         )}
@@ -98,7 +98,8 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
             {/* 2. 中间编辑区 */}
             <div class="p-3 mt-4 bg-primary/5 flex flex-col gap-2.5 rounded-box">
                 <div class="text-xs font-bold text-primary flex items-center gap-1">
-                    <Clock size={14} /> 设定新时段
+                    {/* <Clock size={14} />  */}
+                    设定新时段
                 </div>
 
                 <TimeInput
@@ -136,9 +137,9 @@ export const TimeRangeManager = (props: TimeRangeManagerProps) => {
 
             {/* 3. 底部操作栏 */}
             <div class="flex justify-around gap-2 mt-8 pb-8">
-                <button class="btn btn-soft btn-secondary btn-sm" onClick={handleConfirm}><Save size={14} /> 保存</button>
-                <button class="btn btn-soft btn-accent btn-sm" onClick={handleResetInput}><TimerReset size={14} /> 重置</button>
-                <button class="btn btn-soft btn-warning btn-sm" onClick={() => props.onClose()}><CopyX size={14} /> 关闭</button>
+                <button class="btn btn-soft btn-secondary btn-sm" onClick={handleConfirm}> 保存</button>
+                <button class="btn btn-soft btn-accent btn-sm" onClick={handleResetInput}>  重置</button>
+                <button class="btn btn-soft btn-warning btn-sm" onClick={() => props.onClose()}> 关闭</button>
             </div>
         </div>
     );

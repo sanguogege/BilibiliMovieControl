@@ -1,6 +1,6 @@
 // entrypoints/options/pages/History.tsx
-import { createSignal, onMount, For, Show } from "solid-js";
-import { Trash2, ExternalLink, Info, HandGrab } from "lucide-solid";
+import { createSignal, For, Show } from "solid-js";
+// import { Trash2, ExternalLink, Info, HandGrab } from "lucide-solid";
 import { browser } from "wxt/browser";
 
 import { MAX_HISTORY_LENGTH ,PINNED_HISTORY_LENGTH} from "@/utils/bilibili";
@@ -12,10 +12,10 @@ export default function HistoryPage() {
     const [pinnedHistory, setPinnedHistory] = createSignal<HistoryConfig[]>([]);
 
     // 初始化加载
-    onMount(async () => {
-        const res = await browser.storage.local.get({ pinnedHistory: [] });
-        setPinnedHistory(res.pinnedHistory as HistoryConfig[]);
-    });
+    // onMount(async () => {
+    //     const res = await browser.storage.local.get({ pinnedHistory: [] });
+    //     setPinnedHistory(res.pinnedHistory as HistoryConfig[]);
+    // });
 
     // 删除单条
     const deleteItem = async (url: string) => {
@@ -37,7 +37,7 @@ export default function HistoryPage() {
             <header class="flex justify-between items-center mb-10">
                 <div>
                     <h1 class="text-3xl  mb-3 text-primary flex items-center gap-3">
-                        <HandGrab size={36} /> 手动存档管理
+                        手动存档管理
                     </h1>
                     <p class="text-base-content/70 text-base leading-relaxed">
                         用户手动存档的视频，凡是存档的视频都是符合状态设置的。
@@ -82,14 +82,14 @@ export default function HistoryPage() {
                                     target="_blank"
                                     class="btn btn-primary btn-sm"
                                 >
-                                    <ExternalLink size={16} /> 回看
+                                     回看
                                 </a>
                                 <button
                                     onClick={() => deleteItem(item.url)}
                                     class="btn btn-ghost btn-sm text-base-content/50"
                                     title="删除此条记录"
                                 >
-                                    <Trash2 size={20} />
+                                    删除
                                 </button>
                             </div>
                         </div>
@@ -109,7 +109,6 @@ export default function HistoryPage() {
 
             {/* 底部提示 */}
             <div class="mt-8 p-4 bg-info/10 border border-info/20 rounded-xl flex gap-2.5 items-start">
-                <Info size={18} class="text-info shrink-0 mt-0.5" />
                 <p class="m-0 text-xs text-base-content/70 leading-relaxed">
                     <b>关于手动存档：</b>
                     用户可以在视频播放过程中点击插件图标，选择“手动存档”来保存当前的跳过配置和视频信息，以便下次直接使用。
