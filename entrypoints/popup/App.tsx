@@ -106,10 +106,19 @@ export default function App() {
                             {getSoftName()}
                         </h1>
                         <span
-                            class={`badge badge-xs mr-6 ${
+                            class={`badge badge-xs mr-4 items-center ${
                                 config.isPageReady ? "badge-success" : "badge-ghost"
                             }`}
                         >
+                            <Show when={config.isPageReady}>
+                                {u => <div class="inline-grid *:[grid-area:1/1]">
+                                    <div class="status status-error animate-ping"></div>
+                                    <div class="status status-error"></div>
+                                </div>}
+                            </Show>
+                            <Show when={!config.isPageReady}>
+                                {u => <span class="status"></span>}
+                            </Show>
                             {config.isPageReady ? "已就绪" : "未启动"}
                         </span>
                     </div>
