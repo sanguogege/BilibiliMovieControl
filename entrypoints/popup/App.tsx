@@ -4,8 +4,6 @@ import { TimeInput } from "@/components/TimeInput";
 import { HistoryList } from "@/components/HistoryList";
 import { TimeRangeManager } from "@/components/TimeRangeList";
 import { browser } from "wxt/browser";
-// import { Settings, Clock, Save, RotateCcw } from "lucide-solid";
-
 import { getSoftName, LATEST_HISTORY_LENGTH, PINNED_HISTORY_LENGTH } from "@/utils/bilibili";
 import type { HistoryConfig } from "@/types/types";
 import { useStorageConfig } from "@/hooks/useStorageConfig";

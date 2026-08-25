@@ -1,6 +1,5 @@
 import { createSignal, For } from "solid-js";
 import { TimeInput } from "@/components/TimeInput";
-// import { Trash2, Clock, Save, TimerReset, CopyX } from "lucide-solid";
 import type { TimeRange, TimeRangeManagerProps } from "@/types/types";
 import { formatTime } from "@/utils/bilibili"
 

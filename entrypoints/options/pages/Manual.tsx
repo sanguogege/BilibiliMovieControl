@@ -1,6 +1,5 @@
 // entrypoints/options/pages/History.tsx
 import { createSignal, For, onSettled, Show } from "solid-js";
-// import { Trash2, ExternalLink, Info, HandGrab } from "lucide-solid";
 import { browser } from "wxt/browser";
 
 import { MAX_HISTORY_LENGTH ,PINNED_HISTORY_LENGTH} from "@/utils/bilibili";

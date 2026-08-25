@@ -1,5 +1,4 @@
 import { createSignal, flush, onSettled } from "solid-js";
-// import { Info, LayoutDashboard } from "lucide-solid";
 import { browser } from "wxt/browser";
 
 export default function Home() {

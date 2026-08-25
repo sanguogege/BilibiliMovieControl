@@ -146,7 +146,7 @@ flowchart TD
 | 扩展框架 | [WXT](https://wxt.dev)（Web Extension Toolbox，MV3） |
 | UI 框架 | [SolidJS](https://www.solidjs.com) |
 | 样式 | TailwindCSS 4 + [DaisyUI](https://daisyui.com)（自适应浏览器深浅色主题） |
-| 图标 | Lucide-Solid |
+| 图标 | Heroicons |
 | 帧分析 | Canvas 像素采样（原生实现，无第三方依赖） |
 | 构建工具 | Vite + Bun |
 
